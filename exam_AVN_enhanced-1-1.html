@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Clinical Anatomy Exam</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#f4f0ff;--surface:#fff;
+--header-from:#8a00d4;--header-to:#d400ff;
+--header:#8a00d4;
+--accent:#a200e0;--accent2:#7000b8;--border:#e0d0f8;
+--text:#1a1a2e;--subtext:#7060a0;--answered:#1a8c2e;--marked:#e65100;
+--marked-ans:#a200e0;--unattempted:#d42828;--not-visited:#9e9e9e;
+--option-hover:#f0e8ff;--option-sel:#e2ccff;--option-border:#a200e0;
+--footer-bg:#8a00d4;--timer-warn:#e65100;
+--shadow:0 6px 28px rgba(140,0,210,.18);
+--online:#1a8c2e;--offline:#d42828;--pending:#e65100;
+--grad1:#8a00d4;--grad2:#d400ff;--grad3:#ff00aa;
+--quiz-purple:#9b00e8;--quiz-magenta:#d400ff;--quiz-pink:#ff2d9b;
+--quiz-sky:#00c8ff;--quiz-card-radius:24px;
+}
+.dark{
+--bg:#0e0818;--surface:#1c1030;--header-from:#5a00a8;--header-to:#a200e0;
+--header:#5a00a8;
+--accent:#d400ff;--accent2:#aa00d8;--border:#301c50;
+--text:#f0e8ff;--subtext:#a890d0;--option-hover:#221540;--option-sel:#2d1855;
+--footer-bg:#130828;--shadow:0 4px 24px rgba(0,0,0,.6);
+}
+html,body{height:100%;font-family:'Nunito','Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);transition:background .3s,color .3s}
+
+/* ===== GRADIENT BACKGROUNDS ===== */
+.grad-bg{background:linear-gradient(160deg,#6600cc 0%,#aa00ff 45%,#ff00cc 100%)}
+.grad-bg-subtle{background:linear-gradient(135deg,#f0e8ff 0%,#fce8ff 50%,#ffe8f8 100%)}
+.dark .grad-bg-subtle{background:linear-gradient(135deg,#0e0818 0%,#1c1030 50%,#180c28 100%)}
+
+/* ===== CONSENT SCREEN ===== */
+#consent-page{
+  display:none;position:fixed;inset:0;z-index:900;
+  background:linear-gradient(160deg,#5500aa 0%,#9900ee 45%,#dd00cc 80%,#ff2288 100%);
+  align-items:flex-start;justify-content:center;padding:20px;
+  overflow-y:auto;
+}
+.consent-card{
+  background:rgba(255,255,255,.97);border-radius:28px;padding:36px 32px;max-width:520px;width:100%;
+  box-shadow:0 32px 80px rgba(0,0,0,.45);position:relative;overflow:visible;
+  animation:slideUp .4s ease;margin:auto;
+}
+.dark .consent-card{background:rgba(20,12,40,.97)}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.consent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;border-radius:28px 28px 0 0;background:linear-gradient(90deg,#8a00d4,#d400ff,#ff2d9b,#8a00d4)}
+.consent-icon{font-size:3rem;text-align:center;margin-bottom:16px}
+.consent-title{font-size:1.3rem;font-weight:900;background:linear-gradient(135deg,#8a00d4,#d400ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;margin-bottom:8px;letter-spacing:-.01em}
+.consent-subtitle{font-size:.82rem;color:#7060a0;text-align:center;margin-bottom:20px}
+.consent-box{
+  background:linear-gradient(135deg,#f0e8ff,#fce8ff);border-radius:16px;padding:18px;margin-bottom:20px;
+  border-left:4px solid #a200e0;font-size:.9rem;line-height:1.6;color:#1a1a2e;
+}
+.dark .consent-box{background:linear-gradient(135deg,#1c1030,#28105a);color:#f0e8ff;border-left-color:#d400ff}
+.consent-data-list{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.consent-data-list span{font-size:.78rem;color:#7060a0;display:flex;align-items:center;gap:5px}
+.dark .consent-data-list span{color:#a890d0}
+.consent-data-list span::before{content:'•';color:#a200e0;font-weight:900}
+.consent-check-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;cursor:pointer;padding:10px;border-radius:12px;border:2px solid var(--border);transition:border-color .2s}
+.consent-check-row:hover{border-color:#a200e0}
+.consent-check-row.checked{border-color:#1a8c2e;background:#f0fbf2}
+.dark .consent-check-row.checked{background:#0e2016}
+.consent-check-row input[type=checkbox]{width:18px;height:18px;flex-shrink:0;cursor:pointer;accent-color:#a200e0;margin-top:2px}
+.consent-check-label{font-size:.85rem;line-height:1.5;color:#1a1a2e;cursor:pointer}
+.dark .consent-check-label{color:#f0e8ff}
+.consent-btns{display:flex;gap:10px}
+.consent-accept{flex:2;background:linear-gradient(135deg,#8a00d4,#d400ff);color:#fff;border:none;border-radius:14px;padding:13px;font-size:.95rem;font-weight:800;cursor:pointer;transition:all .2s;opacity:.5;pointer-events:none;letter-spacing:.02em}
+.consent-accept.enabled{opacity:1;pointer-events:auto}
+.consent-accept.enabled:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(162,0,224,.5)}
+.consent-decline{flex:1;background:transparent;color:#7060a0;border:2px solid #e0d0f8;border-radius:14px;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s}
+.consent-decline:hover{border-color:#d42828;color:#d42828}
+
+/* ===== REGISTRATION PAGE ===== */
+#reg-page{
+  display:flex;flex-direction:column;min-height:100vh;
+  background:linear-gradient(160deg,#5500aa 0%,#9900ee 45%,#dd00cc 80%,#ff2288 100%);
+  align-items:center;justify-content:center;padding:20px;
+}
+.reg-card{
+  background:rgba(255,255,255,.97);border-radius:28px;padding:36px 32px;max-width:480px;width:100%;
+  box-shadow:0 32px 80px rgba(0,0,0,.4);position:relative;overflow:hidden;
+  animation:slideUp .4s ease;
+}
+.dark .reg-card{background:rgba(20,12,40,.97);box-shadow:0 32px 80px rgba(0,0,0,.7)}
+.reg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#8a00d4,#d400ff,#ff2d9b,#8a00d4)}
+.reg-logo{text-align:center;margin-bottom:24px}
+.reg-logo-icon{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#8a00d4,#d400ff);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:2rem;box-shadow:0 8px 28px rgba(162,0,224,.5)}
+.reg-logo h2{font-size:1.25rem;font-weight:900;background:linear-gradient(135deg,#8a00d4,#d400ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.3;letter-spacing:-.01em}
+.reg-logo p{font-size:.8rem;color:#7060a0;margin-top:4px;font-weight:600}
+.reg-divider{height:1px;background:linear-gradient(90deg,transparent,#d400ff,transparent);margin:20px 0}
+.reg-field{margin-bottom:18px}
+.reg-label{display:block;font-size:.82rem;font-weight:800;color:#8a00d4;margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase;font-size:.75rem}
+.dark .reg-label{color:#d400ff}
+.req-star{color:#d42828;margin-left:2px}
+.reg-input{width:100%;border:2px solid #e0d0f8;border-radius:14px;padding:12px 14px;font-size:.95rem;font-family:inherit;background:#f8f2ff;color:#1a1a2e;transition:border-color .2s,box-shadow .2s;outline:none;font-weight:600}
+.dark .reg-input{background:#0e0818;color:#f0e8ff;border-color:#301c50}
+.reg-input:focus{border-color:#a200e0;box-shadow:0 0 0 4px rgba(162,0,224,.12);background:#fff}
+.dark .reg-input:focus{background:#1c1030;box-shadow:0 0 0 4px rgba(212,0,255,.15)}
+.reg-input.error{border-color:#d42828;box-shadow:0 0 0 4px rgba(212,40,40,.12)}
+.reg-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a200e0' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
+.field-err{font-size:.75rem;color:#d42828;margin-top:5px;display:none;font-weight:700}
+.field-err.show{display:block}
+.opt-badge{font-size:.72rem;color:#7060a0;font-weight:500;margin-left:4px}
+.reg-btn{width:100%;background:linear-gradient(135deg,#8a00d4,#d400ff);color:#fff;border:none;border-radius:16px;padding:15px;font-size:1rem;font-weight:900;cursor:pointer;transition:all .2s;margin-top:8px;letter-spacing:.04em;box-shadow:0 8px 28px rgba(162,0,224,.45)}
+.reg-btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(162,0,224,.6)}
+.reg-footer-note{text-align:center;font-size:.75rem;color:#7060a0;margin-top:14px}
+
+/* Session recovery banner */
+.recovery-banner{
+  background:linear-gradient(135deg,#fff3e0,#ffe0b2);border-radius:16px;
+  padding:14px 16px;margin-bottom:20px;border-left:4px solid #e65100;display:none;
+}
+.dark .recovery-banner{background:linear-gradient(135deg,#2e1a00,#3e2400);border-left-color:#ff9800}
+.recovery-banner p{font-size:.85rem;color:#bf360c;font-weight:700;margin-bottom:8px}
+.dark .recovery-banner p{color:#ffb74d}
+.recovery-banner .rb-btns{display:flex;gap:8px}
+.rb-btn{border:none;border-radius:10px;padding:7px 14px;font-size:.8rem;font-weight:800;cursor:pointer}
+.rb-resume{background:linear-gradient(135deg,#e65100,#ff9800);color:#fff}
+.rb-discard{background:#e0d0f8;color:#7060a0}
+
+/* ===== RANGE SELECTION PAGE ===== */
+#range-page{
+  display:none;flex-direction:column;min-height:100vh;
+  background:linear-gradient(160deg,#5500aa 0%,#9900ee 45%,#dd00cc 80%,#ff2288 100%);
+  align-items:center;justify-content:center;padding:20px;
+}
+.range-card{background:rgba(255,255,255,.97);border-radius:28px;padding:32px;max-width:520px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,.4);position:relative;overflow:hidden;animation:slideUp .4s ease}
+.dark .range-card{background:rgba(20,12,40,.97)}
+.range-card::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#8a00d4,#d400ff,#ff2d9b,#8a00d4)}
+.welcome-banner{background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:16px;padding:14px 16px;margin-bottom:22px;border-left:4px solid #1a8c2e}
+.dark .welcome-banner{background:linear-gradient(135deg,#0e2016,#0e2e18);border-left-color:#4caf50}
+.welcome-banner p{font-size:.88rem;color:#1b5e20;font-weight:700}
+.dark .welcome-banner p{color:#81c784}
+.welcome-banner span{font-weight:900}
+.range-title{font-size:1.25rem;font-weight:900;background:linear-gradient(135deg,#8a00d4,#d400ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;letter-spacing:-.01em}
+.range-sub{font-size:.82rem;color:#7060a0;margin-bottom:20px;font-weight:600}
+.range-options{display:flex;flex-direction:column;gap:12px;margin-bottom:22px}
+.range-opt{border:2px solid #e0d0f8;border-radius:18px;padding:16px 18px;cursor:pointer;transition:all .25s;display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(240,232,255,.6),rgba(252,232,255,.6))}
+.range-opt:hover{border-color:#a200e0;transform:translateX(3px)}
+.dark .range-opt{border-color:#301c50;background:rgba(20,12,40,.6)}.dark .range-opt:hover{background:rgba(30,16,60,.9);border-color:#d400ff}
+.range-opt.selected{border-color:#a200e0;background:linear-gradient(135deg,#edd8ff,#f8e2ff);box-shadow:0 6px 20px rgba(162,0,224,.2)}
+.dark .range-opt.selected{background:rgba(50,20,90,.85);border-color:#d400ff}
+.range-radio{width:22px;height:22px;border-radius:50%;border:2px solid #e0d0f8;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.range-opt.selected .range-radio{border-color:#a200e0;background:linear-gradient(135deg,#8a00d4,#d400ff)}
+.range-opt.selected .range-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:#fff}
+.range-opt-info strong{display:block;font-size:.95rem;font-weight:800;color:#1a1a2e}
+.dark .range-opt-info strong{color:#f0e8ff}
+.range-opt-info span{font-size:.78rem;color:#7060a0;font-weight:600}
+.custom-range-row{display:flex;gap:10px;margin-bottom:16px}
+.custom-range-row input{flex:1;border:2px solid #e0d0f8;border-radius:12px;padding:10px 12px;font-size:.9rem;font-family:inherit;background:#f8f2ff;color:#1a1a2e;outline:none;transition:border-color .2s;font-weight:600}
+.dark .custom-range-row input{background:#0e0818;color:#f0e8ff;border-color:#301c50}
+.custom-range-row input:focus{border-color:#a200e0}
+.custom-range-row label{font-size:.7rem;font-weight:800;color:#8a00d4;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.dark .custom-range-row label{color:#d400ff}
+.start-btn{width:100%;background:linear-gradient(135deg,#8a00d4,#d400ff);color:#fff;border:none;border-radius:18px;padding:16px;font-size:1.05rem;font-weight:900;cursor:pointer;transition:all .2s;box-shadow:0 8px 28px rgba(162,0,224,.45);letter-spacing:.04em}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(162,0,224,.6)}
+
+/* ===== SYNC STATUS BAR ===== */
+#sync-bar{
+  position:fixed;bottom:44px;left:0;right:0;z-index:250;
+  display:none;align-items:center;justify-content:space-between;
+  padding:6px 14px;font-size:.78rem;font-weight:800;flex-wrap:wrap;gap:6px;
+}
+#sync-bar.online{background:linear-gradient(90deg,#e8f5e9,#f1f8e9);color:#1b5e20;border-top:2px solid #1a8c2e}
+#sync-bar.offline{background:linear-gradient(90deg,#ffebee,#fce4ec);color:#b71c1c;border-top:2px solid #d42828}
+#sync-bar.pending{background:linear-gradient(90deg,#fff3e0,#fbe9e7);color:#bf360c;border-top:2px solid #e65100}
+.sync-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0}
+.sync-dot.online{background:#1a8c2e;box-shadow:0 0 0 3px rgba(26,140,46,.25)}
+.sync-dot.offline{background:#d42828;box-shadow:0 0 0 3px rgba(212,40,40,.25)}
+.sync-dot.pending{background:#e65100;box-shadow:0 0 0 3px rgba(230,81,0,.25);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.sync-bar-left{display:flex;align-items:center;gap:6px}
+.sync-bar-right{display:flex;align-items:center;gap:8px}
+.sync-btn{border:none;border-radius:10px;padding:4px 10px;font-size:.75rem;font-weight:900;cursor:pointer;white-space:nowrap}
+.sync-btn.do-sync{background:linear-gradient(135deg,#e65100,#ff9800);color:#fff}
+.sync-btn.done{background:#1a8c2e;color:#fff;opacity:.7;cursor:default}
+
+/* ===== HEADER ===== */
+#header{
+  position:sticky;top:0;z-index:200;
+  background:linear-gradient(90deg,#6a00cc,#aa00ff,#dd00ee);
+  color:#fff;
+  display:flex;flex-direction:column;
+  padding:6px 10px;
+  box-shadow:0 4px 20px rgba(140,0,210,.4);
+  gap:4px;
+}
+.hdr-row1{display:flex;align-items:center;gap:6px;width:100%}
+.hdr-row2{display:flex;align-items:center;gap:4px;width:100%;flex-wrap:nowrap;overflow:hidden}
+#header h1{font-size:.88rem;font-weight:900;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.hdr-student-info{font-size:.62rem;color:rgba(255,255,255,.9);display:flex;gap:4px;flex-wrap:wrap;align-items:center;padding:1px 0;flex:1;min-width:0}
+.hdr-student-info span{background:rgba(255,255,255,.18);border-radius:6px;padding:1px 6px;white-space:nowrap;backdrop-filter:blur(6px);font-weight:700}
+.hdr-sync-dot{width:8px;height:8px;border-radius:50%;display:inline-block;border:2px solid rgba(255,255,255,.5);flex-shrink:0}
+.hdr-sync-dot.online{background:#4caf50}
+.hdr-sync-dot.offline{background:#ef5350}
+.hdr-sync-dot.pending{background:#ff9800;animation:pulse 1.5s infinite}
+.hdr-right{display:contents}
+#timer-box{background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.35);border-radius:10px;padding:4px 8px;font-size:.78rem;font-weight:900;font-family:monospace;min-width:64px;text-align:center;backdrop-filter:blur(6px);white-space:nowrap;flex-shrink:0}
+#timer-box.warn{background:rgba(230,81,0,.75);border-color:rgba(255,150,100,.5)}
+.icon-btn{background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.28);border-radius:8px;color:#fff;cursor:pointer;padding:4px 7px;font-size:.68rem;white-space:nowrap;backdrop-filter:blur(6px);transition:all .15s;font-weight:700;flex-shrink:0}
+.icon-btn:hover{background:rgba(255,255,255,.32)}
+.exit-btn{background:rgba(255,80,80,.28);border:2px solid rgba(255,120,120,.4);border-radius:8px;color:#fff;cursor:pointer;padding:4px 8px;font-size:.68rem;white-space:nowrap;font-weight:800;transition:all .15s;flex-shrink:0}
+.exit-btn:hover{background:rgba(212,40,40,.55)}
+/* Submit button in header row */
+#header .btn-sub{padding:5px 12px;font-size:.75rem;font-weight:900;flex-shrink:0}
+
+/* Hide less critical buttons on narrow screens */
+@media(max-width:480px){
+  .icon-btn.hide-xs{display:none}
+  #header h1{font-size:.8rem}
+  .hdr-student-info span{font-size:.58rem;padding:1px 4px}
+  #timer-box{font-size:.72rem;min-width:58px;padding:3px 5px}
+  .icon-btn{padding:3px 5px;font-size:.62rem}
+  .exit-btn{padding:3px 6px;font-size:.62rem}
+  #header .btn-sub{padding:4px 10px;font-size:.7rem}
+}
+
+#app{display:flex;height:calc(100vh - var(--hdr-h,88px) - 44px - 32px);overflow:hidden}
+#q-area{flex:1;overflow-y:auto;padding:12px 14px;min-width:0;background:var(--bg)}
+#palette-panel{width:260px;min-width:200px;background:var(--surface);border-left:2px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;flex-shrink:0}
+.q-card{background:var(--surface);border-radius:20px;box-shadow:var(--shadow);padding:24px;margin-bottom:16px;border:1px solid var(--border);position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#8a00d4,#d400ff,#ff2d9b)}
+.q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:6px}
+.q-num-badge{background:linear-gradient(135deg,#8a00d4,#d400ff);color:#fff;border-radius:10px;padding:4px 14px;font-size:.82rem;font-weight:900;letter-spacing:.04em}
+.q-sect{font-size:.75rem;color:var(--subtext);background:linear-gradient(135deg,rgba(162,0,224,.1),rgba(212,0,255,.08));border:1px solid rgba(162,0,224,.2);border-radius:8px;padding:3px 10px;font-weight:700}
+.q-text{font-size:1rem;font-weight:600;line-height:1.65;margin-bottom:20px;color:var(--text)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:flex-start;gap:12px;border:2px solid var(--border);border-radius:16px;padding:12px 16px;cursor:pointer;transition:all .18s;background:var(--surface)}
+.opt:hover{background:var(--option-hover);border-color:var(--accent);transform:translateX(3px)}
+.opt.selected{background:var(--option-sel);border-color:var(--option-border);box-shadow:0 4px 16px rgba(162,0,224,.18)}
+.opt.correct{background:linear-gradient(135deg,#c8f5d0,#d6f5dc);border-color:#1a8c2e;border-width:2px}
+.opt.wrong{background:linear-gradient(135deg,#ffd0d6,#ffe0e4);border-color:#d42828;border-width:2px}
+.opt-ltr{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:900;font-size:.88rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.opt.selected .opt-ltr{background:linear-gradient(135deg,#7000b8,#a200e0)}
+.opt.correct .opt-ltr{background:linear-gradient(135deg,#1a8c2e,#2eb84a)}
+.opt.wrong .opt-ltr{background:linear-gradient(135deg,#d42828,#ef5350)}
+.opt-txt{font-size:.97rem;line-height:1.45;font-weight:600}
+.ctrl-bar{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.btn{border:none;border-radius:12px;cursor:pointer;font-size:.82rem;font-weight:800;padding:10px 16px;transition:all .15s;white-space:nowrap;letter-spacing:.02em}
+.btn-p{background:linear-gradient(135deg,#8a00d4,#d400ff);color:#fff}.btn-p:hover{background:linear-gradient(135deg,#6a00aa,#aa00cc)}
+.btn-s{background:linear-gradient(135deg,#1a8c2e,#28cc44);color:#fff}.btn-s:hover{background:linear-gradient(135deg,#127020,#1a8c2e)}
+.btn-w{background:linear-gradient(135deg,#e65100,#ff9800);color:#fff}.btn-w:hover{background:linear-gradient(135deg,#bf360c,#e65100)}
+.btn-d{background:linear-gradient(135deg,#d42828,#ef5350);color:#fff}.btn-d:hover{background:linear-gradient(135deg,#b71c1c,#d42828)}
+.btn-n{background:var(--border);color:var(--text)}.btn-n:hover{filter:brightness(.93)}
+.btn-sub{background:linear-gradient(135deg,#ff2d9b,#d400ff);color:#fff;padding:9px 18px;font-size:.84rem;font-weight:900}
+.btn-sub:hover{background:linear-gradient(135deg,#cc0070,#aa00cc)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.pal-hdr{padding:13px 16px;border-bottom:2px solid var(--border);font-weight:900;font-size:.9rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:5;background:linear-gradient(90deg,rgba(162,0,224,.1),rgba(212,0,255,.07))}
+.pal-legend{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-bottom:1px solid var(--border)}
+.leg{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--subtext)}
+.leg-dot{width:14px;height:14px;border-radius:5px;flex-shrink:0}
+.pal-grid{display:flex;flex-wrap:wrap;gap:7px;padding:14px;align-content:flex-start}
+.pq{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.72rem;font-weight:900;transition:all .15s;color:#fff;user-select:none}
+.pq:hover{transform:scale(1.12)}
+.pq.cur{box-shadow:0 0 0 3px rgba(255,255,255,.9),0 0 0 5px var(--accent)}
+.pq.nv{background:#9e9e9e}.pq.na{background:#d42828}.pq.ans{background:linear-gradient(135deg,#1a8c2e,#28cc44)}.pq.mrk{background:linear-gradient(135deg,#e65100,#ff9800)}.pq.amrk{background:linear-gradient(135deg,#8a00d4,#d400ff)}
+.stats-bar{display:flex;flex-wrap:wrap;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border)}
+.stat{display:flex;flex-direction:column;align-items:center;flex:1;min-width:50px}
+.stat-val{font-size:1.1rem;font-weight:900}
+.stat-lbl{font-size:.68rem;color:var(--subtext);text-align:center;font-weight:700}
+.prog-bar{height:7px;background:var(--border);border-radius:6px;overflow:hidden;margin:0 12px 10px}
+.prog-fill{height:100%;background:linear-gradient(90deg,#8a00d4,#d400ff,#ff2d9b);border-radius:6px;transition:width .3s}
+.srch-box{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--border)}
+.srch-box input{flex:1;border:1px solid var(--border);border-radius:10px;padding:6px 10px;font-size:.85rem;background:var(--bg);color:var(--text);outline:none;font-weight:600}
+.srch-box input:focus{border-color:var(--accent)}
+.srch-box button{background:linear-gradient(135deg,#8a00d4,#d400ff);color:#fff;border:none;border-radius:10px;padding:6px 12px;cursor:pointer;font-size:.85rem;font-weight:800}
+#footer{background:linear-gradient(90deg,#6a00cc,#aa00ff,#dd00ee);color:rgba(255,255,255,.92);height:44px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:.82rem;flex-wrap:wrap;padding:0 12px;font-weight:700}
+#footer a{color:rgba(255,255,255,.88);text-decoration:none;font-weight:800}
+#footer a:hover{text-decoration:underline;color:#fff}
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:16px}
+.modal-ov.open{display:flex}
+.modal{background:var(--surface);border-radius:22px;padding:28px;max-width:500px;width:100%;box-shadow:0 16px 56px rgba(0,0,0,.4);max-height:90vh;overflow-y:auto;border:1px solid var(--border)}
+.modal::before{content:'';display:block;height:5px;background:linear-gradient(90deg,#8a00d4,#d400ff,#ff2d9b);border-radius:5px;margin-bottom:20px;margin:-28px -28px 20px -28px;border-radius:22px 22px 0 0}
+.modal h2{font-size:1.2rem;margin-bottom:14px;background:linear-gradient(135deg,#8a00d4,#d400ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:900}
+.modal p{font-size:.95rem;line-height:1.55;margin-bottom:10px;font-weight:600}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+#result-page{display:none;overflow-y:auto;padding:24px;min-height:calc(100vh - 58px - 44px - 32px);background:linear-gradient(135deg,#f0e8ff 0%,#fff 50%,#ffe8f8 100%)}
+.dark #result-page{background:linear-gradient(135deg,#0e0818 0%,#1c1030 100%)}
+.res-card{background:var(--surface);border-radius:22px;padding:32px;max-width:700px;margin:0 auto 20px;box-shadow:var(--shadow);text-align:center;border:1px solid var(--border);position:relative;overflow:hidden}
+.res-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,#8a00d4,#d400ff,#ff2d9b)}
+.score-circle{width:155px;height:155px;border-radius:50%;background:linear-gradient(135deg,#8a00d4,#d400ff,#ff2d9b);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 10px 40px rgba(162,0,224,.5)}
+.score-pct{font-size:2.3rem;font-weight:900;color:#fff}
+.score-lbl{font-size:.82rem;color:rgba(255,255,255,.88);font-weight:700}
+.res-stats{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin:16px 0}
+.rs{display:flex;flex-direction:column;align-items:center}
+.rs-val{font-size:1.5rem;font-weight:900}
+.rs-lbl{font-size:.78rem;color:var(--subtext);font-weight:700}
+
+/* Sync status in results */
+.sync-status-card{
+  max-width:700px;margin:0 auto 16px;border-radius:16px;padding:14px 18px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.sync-status-card.online{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:1px solid #a5d6a7}
+.sync-status-card.offline{background:linear-gradient(135deg,#ffebee,#fce4ec);border:1px solid #ef9a9a}
+.sync-status-card.pending{background:linear-gradient(135deg,#fff3e0,#fbe9e7);border:1px solid #ffcc80}
+.sync-status-card.synced{background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:1px solid #66bb6a}
+.sync-status-left{display:flex;align-items:center;gap:10px}
+.sync-status-icon{font-size:1.4rem}
+.sync-status-text strong{display:block;font-size:.9rem;font-weight:900}
+.sync-status-text span{font-size:.78rem;color:var(--subtext);font-weight:700}
+.sync-now-btn{border:none;border-radius:12px;padding:8px 16px;font-size:.82rem;font-weight:900;cursor:pointer;white-space:nowrap;transition:all .15s}
+.sync-now-btn.active{background:linear-gradient(135deg,#e65100,#ff9800);color:#fff}
+.sync-now-btn.active:hover{background:linear-gradient(135deg,#bf360c,#e65100)}
+.sync-now-btn.disabled{background:var(--border);color:var(--subtext);cursor:not-allowed}
+
+/* Student info block */
+.student-info-block{background:linear-gradient(135deg,#f0e8ff,#fce8ff);border-radius:16px;padding:16px 20px;margin-bottom:20px;border-left:4px solid #a200e0;text-align:left}
+.dark .student-info-block{background:linear-gradient(135deg,#1c1030,#2a1058);border-left-color:#d400ff}
+.sib-title{font-size:.75rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#7060a0;margin-bottom:10px}
+.sib-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.sib-item{display:flex;flex-direction:column}
+.sib-label{font-size:.68rem;color:#7060a0;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.sib-value{font-size:.9rem;font-weight:800;color:#1a1a2e;margin-top:1px}
+.dark .sib-value{color:#f0e8ff}
+
+.rev-sect{background:var(--surface);border-radius:16px;padding:20px;max-width:700px;margin:0 auto 16px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.rev-q{border:1px solid var(--border);border-radius:14px;margin-bottom:14px;overflow:hidden}
+.rqh{padding:10px 14px;background:linear-gradient(90deg,rgba(162,0,224,.07),rgba(212,0,255,.04));display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:8px}
+.rqh-txt{flex:1;font-size:.88rem;font-weight:700}
+.rqb{padding:12px 14px;display:none}
+.rqb.open{display:block}
+.r-opt{padding:7px 12px;border-radius:10px;margin:4px 0;font-size:.9rem;font-weight:700}
+.r-opt.c{background:linear-gradient(135deg,#c8f5d0,#d6f5dc);color:#127020}
+.r-opt.w{background:linear-gradient(135deg,#ffd0d6,#ffe0e4);color:#b71c1c}
+.badge{border-radius:8px;padding:3px 9px;font-size:.72rem;font-weight:900;white-space:nowrap}
+.bc{background:linear-gradient(135deg,#1a8c2e,#28cc44);color:#fff}.bw{background:linear-gradient(135deg,#d42828,#ef5350);color:#fff}.bs{background:#9e9e9e;color:#fff}
+.ftabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.ftab{border:2px solid var(--border);border-radius:10px;padding:5px 13px;cursor:pointer;font-size:.8rem;font-weight:800;background:var(--surface);color:var(--text);transition:all .15s}
+.ftab.active{background:linear-gradient(135deg,#8a00d4,#d400ff);color:#fff;border-color:transparent}
+#pal-tog{display:none;position:fixed;bottom:80px;right:14px;z-index:300;background:linear-gradient(135deg,#8a00d4,#d400ff);color:#fff;border:none;border-radius:50%;width:52px;height:52px;font-size:1.3rem;cursor:pointer;box-shadow:0 6px 20px rgba(162,0,224,.5)}
+
+/* Retest modal */
+.retest-opt{border:2px solid var(--border);border-radius:14px;padding:14px 16px;cursor:pointer;margin-bottom:10px;transition:all .2s;display:flex;align-items:flex-start;gap:12px;background:linear-gradient(135deg,rgba(240,232,255,.3),rgba(252,232,255,.3))}
+.retest-opt:hover{border-color:#a200e0;background:linear-gradient(135deg,#f0e8ff,#fce8ff)}
+.retest-opt-icon{font-size:1.5rem;flex-shrink:0}
+.retest-opt-info strong{display:block;font-weight:900;font-size:.92rem}
+.retest-opt-info span{font-size:.78rem;color:var(--subtext);font-weight:600}
+
+/* Toast notification */
+#toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:rgba(20,10,40,.96);color:#fff;border-radius:14px;padding:12px 24px;font-size:.9rem;font-weight:800;
+  z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center;
+  border:1px solid rgba(212,0,255,.35);letter-spacing:.02em;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.success{background:linear-gradient(135deg,#127020,#1a8c2e)}
+#toast.error{background:linear-gradient(135deg,#b71c1c,#d42828)}
+#toast.info{background:linear-gradient(135deg,#8a00d4,#d400ff)}
+
+#loading{position:fixed;inset:0;background:linear-gradient(160deg,#5500aa 0%,#9900ee 45%,#dd00cc 80%,#ff2288 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;color:#fff}
+.spin{width:56px;height:56px;border:5px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:18px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading p{font-size:1rem;opacity:.88;font-weight:700;letter-spacing:.04em}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-thumb{background:rgba(162,0,224,.3);border-radius:3px}
+
+.res-action-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+
+/* ===== RANK / LEADERBOARD ===== */
+.rank-banner{
+  max-width:700px;margin:0 auto 20px;
+  background:linear-gradient(135deg,#8a00d4,#d400ff,#ff2d9b);
+  border-radius:22px;padding:28px 24px;text-align:center;color:#fff;
+  box-shadow:0 14px 52px rgba(162,0,224,.55);position:relative;overflow:hidden;
+}
+.rank-banner::before{content:'🏆';position:absolute;font-size:8rem;opacity:.1;right:-10px;top:-10px}
+.rank-banner h2{font-size:1.7rem;font-weight:900;margin-bottom:8px;text-shadow:0 2px 10px rgba(0,0,0,.3);letter-spacing:-.01em}
+.rank-banner p{font-size:1rem;opacity:.92;margin-bottom:16px;font-weight:700}
+.rank-badge{display:inline-block;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.55);border-radius:100px;padding:9px 30px;font-size:1.2rem;font-weight:900;backdrop-filter:blur(6px)}
+.rank-stars{font-size:2rem;margin-bottom:12px;animation:starPop .5s ease both}
+@keyframes starPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+
+.leaderboard-card{
+  max-width:700px;margin:0 auto 20px;
+  background:var(--surface);border-radius:22px;padding:24px;
+  box-shadow:var(--shadow);border:1px solid var(--border);
+}
+.leaderboard-card h3{font-size:1.1rem;font-weight:900;margin-bottom:16px;
+  background:linear-gradient(135deg,#8a00d4,#d400ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:flex;align-items:center;gap:8px;
+}
+.lb-row{
+  display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;margin-bottom:8px;
+  border:1px solid var(--border);transition:all .2s;
+  background:linear-gradient(90deg,rgba(240,232,255,.4),rgba(252,232,255,.2));
+}
+.lb-row.lb-me{
+  border-color:#a200e0;
+  background:linear-gradient(90deg,rgba(162,0,224,.14),rgba(212,0,255,.07));
+  box-shadow:0 4px 18px rgba(162,0,224,.18);
+}
+.lb-rank{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;flex-shrink:0}
+.lb-rank-1{background:linear-gradient(135deg,#ffd700,#ffa500);color:#5a3a00}
+.lb-rank-2{background:linear-gradient(135deg,#c0c0c0,#a8a8a8);color:#3a3a3a}
+.lb-rank-3{background:linear-gradient(135deg,#cd7f32,#a0522d);color:#fff}
+.lb-rank-n{background:var(--border);color:var(--text)}
+.lb-name{flex:1;font-weight:800;font-size:.92rem}
+.lb-score{font-size:.88rem;font-weight:900;color:#a200e0}
+.lb-pct{font-size:.75rem;color:var(--subtext);background:var(--border);border-radius:8px;padding:2px 8px;font-weight:800}
+.lb-empty{text-align:center;padding:20px;color:var(--subtext);font-size:.9rem;font-weight:700}
+.lb-me-label{font-size:.65rem;background:linear-gradient(135deg,#8a00d4,#d400ff);color:#fff;border-radius:5px;padding:1px 6px;font-weight:900}
+
+/* ===== ALL QUESTIONS WITH ANSWERS ===== */
+.qa-page{display:none;overflow-y:auto;padding:24px;min-height:calc(100vh - 58px - 44px - 32px);background:linear-gradient(135deg,#f0e8ff 0%,#fff 50%,#ffe8f8 100%)}
+.dark .qa-page{background:linear-gradient(135deg,#0e0818 0%,#1c1030 100%)}
+.qa-header{max-width:800px;margin:0 auto 20px;text-align:center}
+.qa-header h2{font-size:1.4rem;font-weight:900;background:linear-gradient(135deg,#8a00d4,#d400ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;letter-spacing:-.01em}
+.qa-header p{font-size:.85rem;color:var(--subtext);font-weight:700}
+.qa-search-bar{max-width:800px;margin:0 auto 16px;display:flex;gap:10px}
+.qa-search-bar input{flex:1;border:2px solid var(--border);border-radius:14px;padding:10px 16px;font-size:.95rem;background:var(--surface);color:var(--text);outline:none;transition:border-color .2s;font-weight:600}
+.qa-search-bar input:focus{border-color:#a200e0}
+.qa-item{
+  max-width:800px;margin:0 auto 12px;
+  background:var(--surface);border-radius:16px;padding:18px 20px;
+  border:1px solid var(--border);box-shadow:var(--shadow);
+}
+.qa-item:hover{border-color:rgba(162,0,224,.3)}
+.qa-qnum{display:inline-block;background:linear-gradient(135deg,#8a00d4,#d400ff);color:#fff;border-radius:8px;padding:2px 10px;font-size:.78rem;font-weight:900;margin-bottom:8px}
+.qa-qtext{font-size:.95rem;font-weight:700;line-height:1.55;margin-bottom:12px;color:var(--text)}
+.qa-opts{display:flex;flex-direction:column;gap:5px}
+.qa-opt{padding:6px 12px;border-radius:10px;font-size:.88rem;border:1px solid var(--border);font-weight:700}
+.qa-opt.qa-correct{background:linear-gradient(135deg,#c8f5d0,#d6f5dc);border-color:#1a8c2e;color:#127020;font-weight:800}
+.qa-back-btn{
+  max-width:800px;margin:0 auto 20px;display:flex;
+}
+.qa-sect-label{font-size:.72rem;color:var(--subtext);background:linear-gradient(135deg,rgba(162,0,224,.1),rgba(212,0,255,.08));border:1px solid rgba(162,0,224,.15);border-radius:7px;padding:2px 8px;margin-bottom:10px;display:inline-block;font-weight:800}
+
+@media(max-width:768px){
+  #header h1{font-size:.82rem}
+  .hdr-student-info{font-size:.65rem}
+  #palette-panel{display:none;position:fixed;inset:0;z-index:400;width:100%;height:100%;border:none}
+  #palette-panel.open{display:flex;flex-direction:column}
+  #pal-tog{display:flex;align-items:center;justify-content:center}
+  .ctrl-bar .btn{padding:7px 9px;font-size:.76rem}
+  .reg-card{padding:24px 18px}
+  .range-card{padding:22px 16px}
+  #app{height:calc(100vh - 88px - 44px - 32px)}
+  .consent-data-list{grid-template-columns:1fr}
+  .lb-row{gap:8px;padding:8px 10px}
+}
+@media(min-width:769px) and (max-width:1024px){
+  #palette-panel{width:220px}
+  .pq{width:36px;height:36px;font-size:.7rem}
+}
+@media print{
+  #header,#footer,#palette-panel,#pal-tog,.ctrl-bar,#submit-btn,#app,#reg-page,#range-page,#consent-page,#sync-bar,#toast{display:none !important}
+  .modal-ov{display:none !important}
+  #result-page{display:block !important;height:auto;overflow:visible;padding:0}
+  .rqb{display:block !important}
+  .res-action-btns{display:none !important}
+  .sync-status-card{display:none !important}
+}
+</style>
+</head>
+<body>
+
+<div id="loading"><div class="spin"></div><p>Loading Clinical Anatomy Question Bank...</p></div>
+
+<!-- ===== CONSENT PAGE ===== -->
+<div id="consent-page" style="display:none;flex-direction:column;align-items:center;justify-content:center">
+  <div class="consent-card">
+    <div class="consent-icon">🔐</div>
+    <div class="consent-title">Data Privacy & Consent</div>
+    <div class="consent-subtitle">Clinical Anatomy Exam — OSHMEDCHRONICLE</div>
+    <div class="consent-box">
+      <strong>By continuing, you agree that your exam details and results may be stored locally and, when internet access is available, securely transmitted to the administrator for academic record purposes.</strong>
+      <div style="margin-top:10px;font-size:.85rem;color:#6b6b8d">The following information will be collected and may be shared with your institution's academic administrator:</div>
+      <div class="consent-data-list">
+        <span>Student Name</span><span>Academic Year</span>
+        <span>Group Number</span><span>Student ID</span>
+        <span>Exam Date &amp; Time</span><span>Question Range</span>
+        <span>Total Questions</span><span>Attempted / Unattempted</span>
+        <span>Marked for Review</span><span>Score &amp; Percentage</span>
+        <span>Device Type</span><span>Sync Status</span>
+      </div>
+    </div>
+    <label class="consent-check-row" id="consent-check-row">
+      <input type="checkbox" id="consent-check" onchange="toggleConsent()">
+      <span class="consent-check-label">I have read and understood the above. I consent to the collection and transmission of my exam data for academic record purposes.</span>
+    </label>
+    <div class="consent-btns">
+      <button class="consent-decline" onclick="declineConsent()">Decline</button>
+      <button class="consent-accept" id="consent-accept-btn" onclick="acceptConsent()">Accept &amp; Continue →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REGISTRATION PAGE ===== -->
+<div id="reg-page" style="display:none">
+  <div class="reg-card">
+    <div class="recovery-banner" id="recovery-banner">
+      <p>⚡ Unfinished session detected! Would you like to resume where you left off?</p>
+      <div class="rb-btns">
+        <button class="rb-btn rb-resume" onclick="resumeSession()">Resume Session</button>
+        <button class="rb-btn rb-discard" onclick="discardSession()">Start Fresh</button>
+      </div>
+    </div>
+    <div class="reg-logo">
+      <div class="reg-logo-icon">🧬</div>
+      <h2>Clinical Anatomy Exam</h2>
+      <p>Pathology 2 — Candidate Registration</p>
+    </div>
+    <div class="reg-divider"></div>
+    <div class="reg-field">
+      <label class="reg-label" for="reg-name">Student Name <span class="req-star">*</span></label>
+      <input class="reg-input" type="text" id="reg-name" placeholder="Enter your full name" autocomplete="name">
+      <div class="field-err" id="err-name">⚠ Student name is required.</div>
+    </div>
+    <div class="reg-field">
+      <label class="reg-label" for="reg-year">Academic Year <span class="req-star">*</span></label>
+      <select class="reg-input reg-select" id="reg-year">
+        <option value="">-- Select Academic Year --</option>
+        <option value="1st Year">1st Year</option>
+        <option value="2nd Year">2nd Year</option>
+        <option value="3rd Year">3rd Year</option>
+        <option value="Final Year">Final Year</option>
+        <option value="Intern">Intern</option>
+        <option value="PG Year 1">PG Year 1</option>
+        <option value="PG Year 2">PG Year 2</option>
+        <option value="PG Year 3">PG Year 3</option>
+      </select>
+      <div class="field-err" id="err-year">⚠ Please select your academic year.</div>
+    </div>
+    <div class="reg-field">
+      <label class="reg-label" for="reg-group">Group Number <span class="req-star">*</span></label>
+      <input class="reg-input" type="text" id="reg-group" placeholder="e.g. Group 5 / B-12">
+      <div class="field-err" id="err-group">⚠ Group number is required.</div>
+    </div>
+    <div class="reg-field">
+      <label class="reg-label" for="reg-id">Student ID <span class="opt-badge">(Auto-Generated)</span></label>
+      <input class="reg-input" type="text" id="reg-id" placeholder="Auto-generated on submit" readonly style="background:#f8f5ff;cursor:not-allowed;color:#6b6b8d;">
+    </div>
+    <div class="reg-field">
+      <label class="reg-label" for="reg-email">Email Address <span class="opt-badge">(Optional)</span></label>
+      <input class="reg-input" type="email" id="reg-email" placeholder="your@email.com" autocomplete="email">
+    </div>
+    <button class="reg-btn" onclick="submitReg()">Continue to Exam →</button>
+    <div class="reg-footer-note">🔒 Your information is stored locally and transmitted only with your consent.</div>
+  </div>
+</div>
+
+<!-- ===== QUESTION RANGE PAGE ===== -->
+<div id="range-page" style="display:none">
+  <div class="range-card">
+    <div class="welcome-banner">
+      <p>👋 Welcome, <span id="welcome-name">Student</span>! You're all set.</p>
+    </div>
+    <div class="range-title">Select Question Range</div>
+    <div class="range-sub">Choose which questions you'd like to attempt in this session. Total: 209 Questions</div>
+    <div class="range-options" id="range-opts">
+      <div class="range-opt selected" onclick="selectRange(this,'all','all')" data-from="all" data-to="all">
+        <div class="range-radio"></div>
+        <div class="range-opt-info"><strong>📚 All Questions</strong><span>Loads all 209 questions from the database</span></div>
+      </div>
+      <div class="range-opt" onclick="selectRange(this,'random25','random25')" data-from="random25" data-to="random25">
+        <div class="range-radio"></div>
+        <div class="range-opt-info"><strong>🎲 Random 25 Questions</strong><span>Randomly selects 25 non-repeating questions with shuffled options</span></div>
+      </div>
+      <div class="range-opt" onclick="selectRange(this,'allqa','allqa')" data-from="allqa" data-to="allqa">
+        <div class="range-radio"></div>
+        <div class="range-opt-info"><strong>📖 All Questions with Answers</strong><span>Browse all questions with correct answers shown — study/reference mode</span></div>
+      </div>
+      <div class="range-opt" onclick="selectRange(this,'custom','custom')" data-from="custom" data-to="custom">
+        <div class="range-radio"></div>
+        <div class="range-opt-info"><strong>🔢 Custom Range</strong><span>Enter start and end question numbers</span></div>
+      </div>
+    </div>
+    <div id="custom-range-inputs" style="display:none">
+      <div class="custom-range-row">
+        <div style="flex:1"><label>Start Question # (1–209)</label><input type="number" id="custom-from" placeholder="e.g. 1" min="1" max="209"></div>
+        <div style="flex:1"><label>End Question # (1–209)</label><input type="number" id="custom-to" placeholder="e.g. 209" min="1" max="209"></div>
+      </div>
+      <div id="range-err" style="color:#c62828;font-size:.8rem;margin-top:4px;display:none"></div>
+    </div>
+    <button class="start-btn" onclick="startExam()">🚀 Start Exam</button>
+  </div>
+</div>
+
+<!-- ===== MAIN EXAM HEADER ===== -->
+<div id="header" style="display:none">
+  <div class="hdr-row1">
+    <h1>&#x1F9EC; Clinical Anatomy</h1>
+    <span class="hdr-sync-dot nv" id="hdr-sync-dot" title="Connection status"></span>
+    <div id="timer-box">00:00:00</div>
+    <button class="btn btn-sub" onclick="confirmSubmit()" id="submit-btn">Submit</button>
+  </div>
+  <div class="hdr-row2">
+    <div class="hdr-student-info" id="hdr-student-info"></div>
+    <button class="icon-btn" onclick="toggleDark()" id="dark-btn">Dark</button>
+    <button class="icon-btn hide-xs" onclick="toggleFS()">&#x26F6;</button>
+    <button class="icon-btn" onclick="reloadExam()" id="reload-btn">&#x21BA; Back</button>
+    <button class="exit-btn" onclick="exitExam()">&#x2715; Exit</button>
+  </div>
+</div>
+
+<!-- ===== EXAM APP ===== -->
+<div id="app" style="display:none">
+  <div id="q-area">
+    <div class="q-card">
+      <div class="q-meta">
+        <span class="q-num-badge" id="q-badge">Q 1</span>
+        <span class="q-sect" id="q-sect">General Anatomy</span>
+      </div>
+      <div class="q-text" id="q-text">Loading...</div>
+      <div class="opts" id="opts-container"></div>
+      <div class="ctrl-bar">
+        <button class="btn btn-n" onclick="navigate(-1)" id="prev-btn">◀ Prev</button>
+        <button class="btn btn-p" onclick="navigate(1)">Next ▶</button>
+        <button class="btn btn-s" onclick="saveAndNext()">Save &amp; Next</button>
+        <button class="btn btn-w" onclick="markReview()">⚑ Review</button>
+        <button class="btn btn-n" onclick="clearResp()">Clear</button>
+      </div>
+    </div>
+  </div>
+  <div id="palette-panel">
+    <div class="pal-hdr"><span>Question Palette</span><button class="icon-btn" onclick="closePal()">✕</button></div>
+    <div class="stats-bar" id="stats-bar"></div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+    <div class="srch-box">
+      <input type="number" id="q-srch" placeholder="Go to Q#" min="1" onkeydown="if(event.key==='Enter')doJump()">
+      <button onclick="doJump()">Go</button>
+    </div>
+    <div class="pal-legend">
+      <div class="leg"><div class="leg-dot" style="background:#9e9e9e"></div>Not Visited</div>
+      <div class="leg"><div class="leg-dot" style="background:#c62828"></div>Not Answered</div>
+      <div class="leg"><div class="leg-dot" style="background:#2e7d32"></div>Answered</div>
+      <div class="leg"><div class="leg-dot" style="background:#e65100"></div>Marked</div>
+      <div class="leg"><div class="leg-dot" style="background:#7b2ff7"></div>Ans+Marked</div>
+    </div>
+    <div style="padding:8px 12px;border-bottom:1px solid var(--border)">
+      <div class="ftabs">
+        <div class="ftab active" onclick="setPalFlt('all',this)">All</div>
+        <div class="ftab" onclick="setPalFlt('ans',this)">Answered</div>
+        <div class="ftab" onclick="setPalFlt('na',this)">Unanswered</div>
+        <div class="ftab" onclick="setPalFlt('mrk',this)">Marked</div>
+        <div class="ftab" onclick="setPalFlt('nv',this)">Not Visited</div>
+      </div>
+    </div>
+    <div class="pal-grid" id="pal-grid"></div>
+  </div>
+</div>
+
+<!-- Sync bar (above footer during exam) -->
+<div id="sync-bar" style="display:none">
+  <div class="sync-bar-left">
+    <span class="sync-dot" id="sync-dot"></span>
+    <span id="sync-bar-text">Checking connection...</span>
+  </div>
+  <div class="sync-bar-right">
+    <button class="sync-btn" id="sync-bar-btn" onclick="trySyncNow()" style="display:none">Sync Now</button>
+  </div>
+</div>
+
+<!-- ===== RESULTS PAGE ===== -->
+<div id="result-page" style="display:none">
+  <!-- Rank banner (shown only when all correct) -->
+  <div id="rank-banner" style="display:none;max-width:700px;margin:0 auto 20px">
+    <div class="rank-banner">
+      <div class="rank-stars" id="rank-stars">⭐⭐⭐</div>
+      <h2 id="rank-title">🏆 Perfect Score!</h2>
+      <p id="rank-msg">You answered all questions correctly. Outstanding!</p>
+      <div class="rank-badge" id="rank-badge">Rank #1</div>
+    </div>
+  </div>
+
+  <div class="sync-status-card" id="res-sync-card">
+    <div class="sync-status-left">
+      <div class="sync-status-icon" id="res-sync-icon">⏳</div>
+      <div class="sync-status-text">
+        <strong id="res-sync-title">Checking sync status...</strong>
+        <span id="res-sync-sub">Please wait</span>
+      </div>
+    </div>
+    <button class="sync-now-btn" id="res-sync-btn" onclick="trySyncNow()">Sync Now</button>
+  </div>
+
+  <div class="res-card">
+    <h2 style="font-size:1.5rem;margin-bottom:16px;background:linear-gradient(135deg,#7b2ff7,#c355f5);-webkit-background-clip:text;-webkit-text-fill-color:transparent">📋 Exam Results</h2>
+    <div class="student-info-block" id="res-student-block">
+      <div class="sib-title">Candidate Information</div>
+      <div class="sib-grid" id="res-student-grid"></div>
+    </div>
+    <div class="score-circle"><span class="score-pct" id="res-pct">0%</span><span class="score-lbl">Score</span></div>
+    <div class="res-stats" id="res-stats"></div>
+    <div class="res-action-btns">
+      <button class="btn btn-p" onclick="showRev('all')">All Questions</button>
+      <button class="btn btn-s" onclick="showRev('correct')">Correct</button>
+      <button class="btn btn-d" onclick="showRev('wrong')">Wrong</button>
+      <button class="btn btn-w" onclick="showRev('skip')">Skipped</button>
+      <button class="btn btn-n" onclick="downloadResult()">⬇ Download</button>
+      <button class="btn btn-n" onclick="window.print()">🖨 Print</button>
+      <button class="btn btn-sub" onclick="openRetestModal()">🔄 Retest</button>
+    </div>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="leaderboard-card" id="leaderboard-card">
+    <h3>🏅 Live Leaderboard — Top Performers
+      <button onclick="fetchLeaderboard(true)" id="lb-refresh-btn" style="margin-left:auto;background:linear-gradient(135deg,#8a00d4,#d400ff);color:#fff;border:none;border-radius:10px;padding:5px 13px;font-size:.75rem;font-weight:800;cursor:pointer">⟳ Refresh</button>
+    </h3>
+    <div id="lb-status" style="font-size:.78rem;color:var(--subtext);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+      <span id="lb-status-dot" style="width:8px;height:8px;border-radius:50%;background:#9e9e9e;display:inline-block;flex-shrink:0"></span>
+      <span id="lb-status-text">Loading live leaderboard…</span>
+    </div>
+    <div id="leaderboard-list"></div>
+    <div id="lb-my-rank" style="display:none;margin-top:10px;padding:10px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(162,0,224,.1),rgba(212,0,255,.06));border:2px solid #a200e0;font-size:.88rem;font-weight:800;text-align:center;color:var(--text)"></div>
+    <div style="font-size:.7rem;color:var(--subtext);margin-top:8px;text-align:center">Live data — synced from all students via Google Sheets</div>
+  </div>
+
+  <div class="rev-sect" id="rev-container"></div>
+</div>
+
+<!-- ===== ALL QUESTIONS WITH ANSWERS PAGE ===== -->
+<div class="qa-page" id="qa-page">
+  <div class="qa-header">
+    <h2>📖 All Questions with Answers</h2>
+    <p>Study reference — all questions with correct answers highlighted</p>
+  </div>
+  <div class="qa-back-btn">
+    <button class="btn btn-p" onclick="exitQAPage()">← Back to Range Selection</button>
+  </div>
+  <div class="qa-search-bar">
+    <input type="text" id="qa-search" placeholder="Search questions…" oninput="filterQA(this.value)">
+  </div>
+  <div id="qa-list"></div>
+</div>
+
+<button id="pal-tog" onclick="togglePal()">☰</button>
+
+<div id="footer" style="display:none">
+  <span>Clinical Anatomy | OSHMEDCHRONICLE | Pradeep Waghmare</span>
+  <a href="https://youtu.be/WDVnkr4X8Ug?si=x1iiMUr2c2-WAkmt" target="_blank" rel="noopener">▶ YouTube</a>
+</div>
+
+<!-- Submit confirm modal -->
+<div class="modal-ov" id="confirm-modal">
+  <div class="modal">
+    <h2>Submit Exam?</h2>
+    <p id="confirm-msg"></p>
+    <div class="modal-btns">
+      <button class="btn btn-n" onclick="closeModal('confirm-modal')">Cancel</button>
+      <button class="btn btn-d" onclick="submitExam()">Submit Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Exit confirm modal -->
+<div class="modal-ov" id="exit-modal">
+  <div class="modal">
+    <h2>Exit Exam?</h2>
+    <p>Your progress will be saved. You can resume from where you left off next time. Are you sure you want to exit?</p>
+    <div class="modal-btns">
+      <button class="btn btn-n" onclick="closeModal('exit-modal')">Keep Going</button>
+      <button class="btn btn-d" onclick="doExit()">Exit &amp; Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Retest modal -->
+<div class="modal-ov" id="retest-modal">
+  <div class="modal">
+    <h2>🔄 Retest Options</h2>
+    <div class="retest-opt" onclick="doRetake()">
+      <div class="retest-opt-icon">🔁</div>
+      <div class="retest-opt-info"><strong>Retake Same Range</strong><span>Keeps your name, year and group. Resets answers and timer.</span></div>
+    </div>
+    <div class="retest-opt" onclick="doFreshExam()">
+      <div class="retest-opt-icon">🆕</div>
+      <div class="retest-opt-info"><strong>Start Fresh Exam</strong><span>Clears all student information. Returns to registration screen.</span></div>
+    </div>
+    <div class="modal-btns"><button class="btn btn-n" onclick="closeModal('retest-modal')">Cancel</button></div>
+  </div>
+</div>
+
+<!-- Pending sync modal -->
+<div class="modal-ov" id="pending-sync-modal">
+  <div class="modal">
+    <h2>🌐 Internet Connected!</h2>
+    <p>You have <strong id="pending-count">1</strong> pending exam result(s) that haven't been synchronized yet. Would you like to sync them now?</p>
+    <div class="modal-btns">
+      <button class="btn btn-n" onclick="closeModal('pending-sync-modal')">Later</button>
+      <button class="btn btn-s" onclick="syncPendingNow()">Sync Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+<script>
+var QUESTIONS=[
+{num:"1",q:"State the number of pairs of sacral spinal nerves:",opts:[{l:"A",t:"One pair of nerves"},{l:"B",t:"Three pairs of nerves"},{l:"C",t:"Five pairs of nerves"},{l:"D",t:"Seven pairs of nerves"},{l:"E",t:"Eight pairs of nerves"}],ans:"C"},
+{num:"2",q:"State the number of pairs of lumbar spinal nerves:",opts:[{l:"A",t:"One pair of nerves"},{l:"B",t:"Three pairs of nerves"},{l:"C",t:"Five pairs of nerves"},{l:"D",t:"Seven pairs of nerves"},{l:"E",t:"Eight pairs of nerves"}],ans:"C"},
+{num:"3",q:"State the number of pairs of cervical spinal nerves:",opts:[{l:"A",t:"One pair of nerves"},{l:"B",t:"Three pairs of nerves"},{l:"C",t:"Five pairs of nerves"},{l:"D",t:"Seven pairs of nerves"},{l:"E",t:"Eight pairs of nerves"}],ans:"E"},
+{num:"4",q:"State how many pairs of spinal nerves branch from the spinal cord:",opts:[{l:"A",t:"25 pairs of spinal nerves"},{l:"B",t:"27 pairs of spinal nerves"},{l:"C",t:"29 pairs of spinal nerves"},{l:"D",t:"31 pairs of spinal nerves"}],ans:"D"},
+{num:"5",q:"Indicate which veins directly connect the dural sinuses to the external veins:",opts:[{l:"A",t:"Diploic veins"},{l:"B",t:"Ocular veins"},{l:"C",t:"Labyrinth veins"},{l:"D",t:"Emissary veins"},{l:"E",t:"Major cerebral vein"}],ans:"D"},
+{num:"6",q:"Specify the dural sinus that is continued by the internal jugular vein:",opts:[{l:"A",t:"Тransverse sinus."},{l:"B",t:"Superior sagittal sinus"},{l:"C",t:"Sigmoid sinus"},{l:"D",t:"Superior petrosal sinus"},{l:"E",t:"Rectus sinus"}],ans:"C"},
+{num:"7",q:"State the origin of the superior vena cava:",opts:[{l:"A",t:"Pulmonary veins"},{l:"B",t:"Internal jugular veins"},{l:"C",t:"Azygos and hemiazygos veins"},{l:"D",t:"Brachiocephalic veins"},{l:"E",t:"Subclavian veins"}],ans:"D"},
+{num:"8",q:"State which artery gives branches to the mesenteric part of the small intestine:",opts:[{l:"A",t:"Common hepatic artery"},{l:"B",t:"Splenic artery"},{l:"C",t:"Superior mesenteric artery"},{l:"D",t:"Inferior mesenteric artery"},{l:"E",t:"Internal iliac artery"}],ans:"C"},
+{num:"9",q:"State which artery supplies blood to the abdominal esophagus:",opts:[{l:"A",t:"Right gastroepiploic artery,"},{l:"B",t:"Left gastroepiploic artery,"},{l:"C",t:"Left gastric artery,"},{l:"D",t:"Right gastric artery."},{l:"E",t:"Splenic artery."}],ans:"C"},
+{num:"10",q:"Specify by merging which vessels the basilar artery is formed:",opts:[{l:"A",t:"Posterior cerebral arteries"},{l:"B",t:"Anterior cerebral arteries"},{l:"C",t:"Middle cerebral arteries"},{l:"D",t:"Internal carotid arteries"},{l:"E",t:"Vertebral arteries"}],ans:"E"},
+{num:"11",q:"State which artery is a direct extension of the subclavian artery:",opts:[{l:"A",t:"Brachial artery."},{l:"B",t:"Axillary artery"},{l:"C",t:"Vertebral artery"},{l:"D",t:"Common carotid artery"},{l:"E",t:"Thyrocervical trunk"}],ans:"B"},
+{num:"12",q:"Specify the origin of the left subclavian artery:",opts:[{l:"A",t:"Aortic arch."},{l:"B",t:"Brachiocephalic trunk"},{l:"C",t:"Left common carotid artery"},{l:"D",t:"Descending part of the aorta"},{l:"E",t:"The ascending part of the aorta"}],ans:"A"},
+{num:"13",q:"Specify the origin of the right subclavian artery:",opts:[{l:"A",t:"The aortic arch."},{l:"B",t:"Brachiocephalic trunk"},{l:"C",t:"Right common carotid artery"},{l:"D",t:"Descending part of the aorta"},{l:"E",t:"The ascending part of the aorta"}],ans:"B"},
+{num:"14",q:"Specify the localization of the carotid glomus:",opts:[{l:"A",t:"At the bifurcation of the brachiocephalic trunk"},{l:"B",t:"At the bifurcation of the common carotid artery"},{l:"C",t:"In the wall of the aortic arch"},{l:"D",t:"In the wall of the internal carotid artery"},{l:"E",t:"In the wall of the external carotid artery"}],ans:"B"},
+{num:"15",q:"When examining the blood supply to the foot, the doctor examines the pulsation of a large artery that runs behind the malleolus medialis in a separate fibrous canal. What is the artery?",opts:[{l:"A",t:"Fibular a."},{l:"B",t:"Posterior tibial a."},{l:"C",t:"Dorsal pedis a."},{l:"D",t:"Anterior tibial a."},{l:"E",t:"Middle malleolus a."}],ans:"A"},
+{num:"16",q:"Which artery is the direct branch of coeliac trunk?",opts:[{l:"A",t:"Right gastric a."},{l:"B",t:"Left gastroepiploic a."},{l:"C",t:"Right gastroepiploic a."},{l:"D",t:"Left gastric a."},{l:"E",t:"Short gastric aa."}],ans:"D"},
+{num:"17",q:"Hemorrhage in the pool of which artery can lead to paralysis of the cardiovascular and respiratory centers?",opts:[{l:"A",t:"Vertebral artery"},{l:"B",t:"Anterior cerebral artery"},{l:"C",t:"Middle cerebral artery"},{l:"D",t:"Anterior communicating artery"},{l:"E",t:"Posterior communicating artery"}],ans:"A"},
+{num:"18",q:"The patient is diagnosed with anteroapical infarction, which is a consequence of thrombosis of one of the vessels of the heart. Which one?",opts:[{l:"A",t:"Posterior interventricular branch of the right coronary artery"},{l:"B",t:"The circumflex branch of the left coronary artery"},{l:"C",t:"Right coronary artery"},{l:"D",t:"Anterior interventricular branch of the left coronary artery"},{l:"E",t:"Left coronary artery"}],ans:"D"},
+{num:"19",q:"The patient was diagnosed with ischemic heart disease, widespread myocardial infarction of the posterior wall of the right ventricle. Which artery branches are involved in this?",opts:[{l:"A",t:"Left coronary"},{l:"B",t:"Right coronary"},{l:"C",t:"Right subclavian"},{l:"D",t:"Left subclavian"},{l:"E",t:"Pulmonary"}],ans:"B"},
+{num:"20",q:"Examination of a 56-year-old patient, after myocardial infarction, revealed a dysfunction of the coronary sinus of the heart. The physician should remember that the major inflows of the sinus coronarius of the heart are:",opts:[{l:"A",t:"6 veins"},{l:"B",t:"5 veins"},{l:"C",t:"4 veins"},{l:"D",t:"7 veins"},{l:"E",t:"3 veins"}],ans:"B"},
+{num:"21",q:"Examining the patient, the surgeon examines the pulsation of the artery behind the medial ankle. The surgeon examines the pulsation of which artery?",opts:[{l:"A",t:"Posterior tibial artery"},{l:"B",t:"Peroneal artery"},{l:"C",t:"Anterior tibial artery"},{l:"D",t:"Posterior circumflex tibial artery"},{l:"E",t:"Anterior circumflex tibial artery"}],ans:"A"},
+{num:"22",q:"A 35-year-old man consulted a surgeon with complaints of pain when walking, numbness and \"crawling of ants\" in the heel area and lateral surface of the lower third of the leg. Which vessel is affected?",opts:[{l:"A",t:"Lateral plantar artery."},{l:"B",t:"Posterior tibial artery."},{l:"C",t:"Anterior tibial artery."},{l:"D",t:"Medial plantar artery."},{l:"E",t:"Peroneal artery."}],ans:"E"},
+{num:"23",q:"A patient has tissue ischemia below the knee joint, which is accompanied by \"intermittent claudication\". An occlusion which arteries can be thought of?",opts:[{l:"A",t:"The proximal part of the femoral artery."},{l:"B",t:"Peroneal artery."},{l:"C",t:"Posterior tibial artery."},{l:"D",t:"Anterior tibial artery."},{l:"E",t:"Popliteal artery."}],ans:"E"},
+{num:"24",q:"Which artery comes out of the adductor canal together with the saphenous nerve?",opts:[{l:"A",t:"Descending genicular artery."},{l:"B",t:"Femoral artery."},{l:"C",t:"Posterior tibial artery."},{l:"D",t:"Anterior tibial artery."},{l:"E",t:"The proximal part of the femoral artery."}],ans:"A"},
+{num:"25",q:"Which artery is used to measure the pulse in the ankle joint?",opts:[{l:"A",t:"Peroneal artery."},{l:"B",t:"Arcuate artery."},{l:"C",t:"Anterior tibial artery."},{l:"D",t:"Posterior tibial artery."},{l:"E",t:"Dorsal artery of the foot."}],ans:"E"},
+{num:"26",q:"A 45-year-old patient has pallor of the skin of the leg and foot on the right leg, the absence of pulsation of the dorsal artery of the foot and posterior tibial artery is determined. Femoral artery pulsation is preserved. Defeat any artery happened?",opts:[{l:"A",t:"External iliac."},{l:"B",t:"Fibular."},{l:"C",t:"Popliteal."},{l:"D",t:"Descending genicular."},{l:"E",t:"Deep femoral artery."}],ans:"C"},
+{num:"27",q:"A 70-year-old victim has a fracture of the femoral neck with rupture of the ligament of the femoral head. Which artery branch is damaged?",opts:[{l:"A",t:"Femoral"},{l:"B",t:"External iliac"},{l:"C",t:"Obturator"},{l:"D",t:"Inferior gluteal"},{l:"E",t:"Internal pudendal"}],ans:"C"},
+{num:"28",q:"When a malignant tumor is removed, the upper third of the rectum is ligated superior rectal a. From what arterial trunk does this vessel originate?",opts:[{l:"A",t:"External iliac a."},{l:"B",t:"Superior mesenteric a."},{l:"C",t:"Internal iliac a"},{l:"D",t:"Inferior mesentric a."},{l:"E",t:"Internal pudendal a."}],ans:"D"},
+{num:"29",q:"The victim has a fracture of the body and upper branch of the pubic bone, the fragments damaged the vessels that pass in the vascular lacuna. What vessels are damaged?",opts:[{l:"A",t:"Internal pudendal a.et v."},{l:"B",t:"Internal iliac a.et v."},{l:"C",t:"External iliac a. et v."},{l:"D",t:"Femoral a.et v."},{l:"E",t:"Superficial epigastric a.et v."}],ans:"D"},
+{num:"30",q:"Name the artery that is of primary importance in the development of collateral circulation of the lower limb after ligation of the external iliac artery",opts:[{l:"A",t:"Superficial circumflex femoral artery"},{l:"B",t:"Medial circumflex femoral artery"},{l:"C",t:"Lateral circumflex femoral artery"},{l:"D",t:"Superficial epigastric artery"},{l:"E",t:"Internal iliac artery"}],ans:"E"},
+{num:"31",q:"When performing retrograde aortography, the femoral artery is punctured, advancing the catheter in the cranial direction. In which vessel will the catheter end up after passing the femoral artery?",opts:[{l:"A",t:"Popliteal artery."},{l:"B",t:"Internal iliac artery."},{l:"C",t:"External iliac artery."},{l:"D",t:"Superior mesenteric artery."},{l:"E",t:"Inferior mesenteric artery."}],ans:"C"},
+{num:"32",q:"When operating on a patient for obstruction of the ureter with a stone, in the lower parts of his abdominal part, the surgeon must be very careful not to accidentally bandage:",opts:[{l:"A",t:"Splenic artery"},{l:"B",t:"Testicular artery"},{l:"C",t:"Superior mesentric artery."},{l:"D",t:"Lumbar artery."},{l:"E",t:"Inferior epigastric artery."}],ans:"B"},
+{num:"33",q:"During surgery, bleeding occurred on the membranous part of the male urethra. Which arteries should be ligated to stop it?",opts:[{l:"A",t:"Inferior rectal and perineal"},{l:"B",t:"Inferior vesical and superior rectal"},{l:"C",t:"Middle rectal and superior vesical"},{l:"D",t:"Deep penis artery and inferior vesical"},{l:"E",t:"Superior rectal and perineal"}],ans:"A"},
+{num:"34",q:"When a tumor of the pancreas is removed, a vessel is damaged, which runs along the upper edge of the pancreas. Which vessel is damaged?",opts:[{l:"A",t:"Superior pancreaticoduodenal artery."},{l:"B",t:"Splenic artery"},{l:"C",t:"Inferior pancreaticoduodenal artery."},{l:"D",t:"Left gastroepiploic artery."},{l:"E",t:"Right gastroepiploic artery."}],ans:"A"},
+{num:"35",q:"When removing the gallbladder in a ligature instead of one cystic a. was a retracted artery whose ligation resulted in necrosis of the right lobe of the liver and death. Which artery was wrongly tied together with cystic a.?",opts:[{l:"A",t:"Right hepatic artery."},{l:"B",t:"Common hepatic artery."},{l:"C",t:"Proper hepatic artery."},{l:"D",t:"Gastroduodenal artery."},{l:"E",t:"Superior pancreaticoduodenal artery."}],ans:"A"},
+{num:"36",q:"Examining the abdominal cavity of the victim with a penetrating wound of the anterior abdominal wall, the surgeon noticed damage to the lesser omentum, from which bright red (arterial) blood flowed. Which artery was damaged?",opts:[{l:"A",t:"Splenic artery"},{l:"B",t:"Left gastroepiploic artery."},{l:"C",t:"Right gastroepiploic artery."},{l:"D",t:"Common hepatic artery."},{l:"E",t:"Proper hepatic artery."}],ans:"E"},
+{num:"37",q:"The patient underwent removal of the appendix due to its inflammation. The branch of which artery was tied by the surgeon during the operation?",opts:[{l:"A",t:"Jejunal"},{l:"B",t:"Right colic."},{l:"C",t:"Iliocolic."},{l:"D",t:"Middle colic."},{l:"E",t:"Left colic."}],ans:"C"},
+{num:"38",q:"A patient with a stomach ulcer, which is located in the pyloric section on the lesser curvature, has bleeding. Which vessel needs to be bandaged to stop bleeding?",opts:[{l:"A",t:"Hepatic artery."},{l:"B",t:"Left gastric artery."},{l:"C",t:"Right gastric artery."},{l:"D",t:"Left gastroepiploic artery."},{l:"E",t:"Right gastroepiploic artery."}],ans:"C"},
+{num:"39",q:"The patient is operated on for thrombosis of the inferior mesenteric artery. Which parts of the gastrointestinal tract should be examined during surgery to detect possible necrosis?",opts:[{l:"A",t:"Stomach"},{l:"B",t:"Descending colon, sigmoid, rectum"},{l:"C",t:"Duodenum"},{l:"D",t:"Jejunum and ileum"},{l:"E",t:"Cecum and ascending colon"}],ans:"B"},
+{num:"40",q:"A 12-year-old boy underwent removal of the thymus for medical reasons. At the same time, the vessels supplying this gland were bandaged. The main source of these vessels is:",opts:[{l:"A",t:"Costocervical trunk."},{l:"B",t:"Thyrocervical trunk."},{l:"C",t:"Vertebral artery"},{l:"D",t:"Internal thoracic artery"},{l:"E",t:"Thoracic aorta"}],ans:"D"},
+{num:"41",q:"The narrowing of a large vessel resulted in a deterioration in the outflow of blood from the left ventricle. Which vessel has undergone pathological changes?",opts:[{l:"A",t:"Aorta"},{l:"B",t:"Pulmonary trunk"},{l:"C",t:"Pulmonary vein"},{l:"D",t:"Superior vena cava"},{l:"E",t:"Inferior vena cava"}],ans:"A"},
+{num:"42",q:"An injured worker was admitted to the hospital with a cut wound on the anterior surface of the shoulder, with arterial bleeding. Which artery is most likely damaged?",opts:[{l:"A",t:"Deep brachial artery"},{l:"B",t:"Radial artery."},{l:"C",t:"Ulnar artery"},{l:"D",t:"Brachial artery"},{l:"E",t:"Subscapular artery"}],ans:"D"},
+{num:"43",q:"In a 35-year-old man, during an injury to the posterior surface of the shoulder, the radial nerve and the arterial vessel, which runs next to it in the humeromuscular canal, were damaged . Which artery was damaged?",opts:[{l:"A",t:"Axillary artery"},{l:"B",t:"Deep brachial artery"},{l:"C",t:"Radial artery."},{l:"D",t:"Ulnar artery"},{l:"E",t:"Brachial artery"}],ans:"B"},
+{num:"44",q:"A patient was admitted to the emergency room with a fracture of the bones of the hand with severe bleeding in the area of the anatomical snuffbox. Which vessel is damaged?",opts:[{l:"A",t:"Radial artery."},{l:"B",t:"Ulnar artery."},{l:"C",t:"Anterior interspinous artery."},{l:"D",t:"Posterior interspinous artery."},{l:"E",t:"Superficial palmar arch."}],ans:"A"},
+{num:"45",q:"The doctor found a fracture of the left clavicle and impaired blood circulation in the limb (no pulsation on the radial artery) in the victim of a road accident. What is the reason?",opts:[{l:"A",t:"Axillary vein compression"},{l:"B",t:"Compression of the axillary artery"},{l:"C",t:"Compression of the subclavian vein"},{l:"D",t:"Compression of the vertebral artery"},{l:"E",t:"Compression of the subclavian artery"}],ans:"E"},
+{num:"46",q:"A patient was diagnosed with a fracture of the surgical neck of the humerus. Which artery can be damaged during transportation without immobilization?",opts:[{l:"A",t:"Axillary artery"},{l:"B",t:"Anterior circumflex brachial artery"},{l:"C",t:"Posterior circumflex brachial artery"},{l:"D",t:"Brachial artery"},{l:"E",t:"Deep brachial artery"}],ans:"C"},
+{num:"47",q:"A victim with severe arterial bleeding resulting from a stab wound in the supraspinatus fossa was delivered to the clinic. Which of the branches of the subclavian artery should be tied to stop bleeding?",opts:[{l:"A",t:"Deep cervical artery."},{l:"B",t:"Transverse cervical artery"},{l:"C",t:"Vertebral artery"},{l:"D",t:"Costocervical trunk."},{l:"E",t:"Thyrocervical trunk."}],ans:"E"},
+{num:"48",q:"The patient, 24 years old, went to the doctor complaining of pain under the right mandible, surgery dentist found a stone in the submandibular gland. By removing it, he prevented bleeding from the artery:",opts:[{l:"A",t:"Submental a."},{l:"B",t:"Facial a."},{l:"C",t:"Inferior alveolar a."},{l:"D",t:"Inferior labial a."},{l:"E",t:"Lingual a."}],ans:"B"},
+{num:"49",q:"The injured man was found to have a subdural hematoma in the temporal part. Which artery is damaged?",opts:[{l:"A",t:"Middle meningeal artery."},{l:"B",t:"Middle cerebral artery."},{l:"C",t:"Posterior communicating artery."},{l:"D",t:"Anterior meningeal artery."},{l:"E",t:"Anterior cerebral artery."}],ans:"A"},
+{num:"50",q:"What artery can be damaged when performing conduction anesthesia in the area of the foramen of the mandible?",opts:[{l:"A",t:"Inferior alveolar artery."},{l:"B",t:"Buccal artery."},{l:"C",t:"Lingual artery."},{l:"D",t:"Pterygoid branches."},{l:"E",t:"Middle meningeal artery."}],ans:"A"},
+{num:"51",q:"A 70-year old patient with tongue cancer developed ulcerations in the mouth and bleeding with scarlet blood. To stop bleeding, it became necessary to ligate the lingual artery. In the range of the triangle of the neck need to tie up the lingual artery?",opts:[{l:"A",t:"Submandibular"},{l:"B",t:"Carotid"},{l:"C",t:"Omo-tracheal"},{l:"D",t:"Omo-clavicular"},{l:"E",t:"Omo-trapezoidal"}],ans:"A"},
+{num:"52",q:"After a right-sided fracture in the area of the anterior third of the mandible, hemorrhage [hematoma] in the chin area is determined. Which artery damage is it caused?",opts:[{l:"A",t:"Mental"},{l:"B",t:"Inferior labial"},{l:"C",t:"Lingual"},{l:"D",t:"Facial"},{l:"E",t:"Palatine"}],ans:"A"},
+{num:"53",q:"During the surgical intervention in the area of the trepanation triangle for purulent mastoiditis, the vessel was damaged, which led to the formation of a hematoma behind the auricle. Which vessel is damaged?",opts:[{l:"A",t:"Mastoid ramus occipital a."},{l:"B",t:"Occipital a."},{l:"C",t:"Posterior auricular a."},{l:"D",t:"Superficial temporal a."},{l:"E",t:"Facial a."}],ans:"C"},
+{num:"54",q:"With purulent inflammation of the middle ear, an artery is involved in the pathological process, which is located on the front wall of the tympanic cavity. What artery is it?",opts:[{l:"A",t:"Internal carotid a."},{l:"B",t:"External carotid a."},{l:"C",t:"Middle meningeal a."},{l:"D",t:"Posterior auricular a."},{l:"E",t:"Superficial temporal a."}],ans:"A"},
+{num:"55",q:"Patient, 45 years old, complains of dizziness, unsteadiness while walking, impaired coordination of movements. During the examination it was found that the patient has osteochondrosis of the cervical spine and the vessel is pinched, which passes through the transverse openings of the cervical vertebrae. What kind of vessel is it?",opts:[{l:"A",t:"Subclavian a."},{l:"B",t:"Vertebral a."},{l:"C",t:"External carotid a."},{l:"D",t:"Internal carotid a."},{l:"E",t:"Occipital a."}],ans:"B"},
+{num:"56",q:"During the operation to close the congenital fissure of the palate (uranoplasty), when knocking down the pterygoid hook with a chisel, the large palatine canal is damaged. Bleeding has occurred, which can only be stopped by tamponade of the canal. Which artery was damaged by the surgeon?",opts:[{l:"A",t:"Sphenoidal artery."},{l:"B",t:"Ascending palatine artery."},{l:"C",t:"Ascending pharyngeal artery."},{l:"D",t:"Descending palatine artery."},{l:"E",t:"Posterior superior alveolar artery."}],ans:"D"},
+{num:"57",q:"The patient has a lesion of the inner ear of vascular origin. Which artery branches mainly supply the inner ear?",opts:[{l:"A",t:"Vertebral a."},{l:"B",t:"Posterior cerebral a."},{l:"C",t:"Basilar a."},{l:"D",t:"Middle cerebral a."},{l:"E",t:"Anterior cerebral a."}],ans:"C"},
+{num:"58",q:"Which artery is involved in the blood supply to the tongue?",opts:[{l:"A",t:"Superior cervical artery."},{l:"B",t:"Mandibular artery."},{l:"C",t:"Inferior alveolar artery."},{l:"D",t:"Lingual artery."},{l:"E",t:"Anterior facial artery."}],ans:"D"},
+{num:"59",q:"The victim was taken to hospital with a fracture of the mandible and significant bleeding in the area of the fracture. Which artery was most likely damaged?",opts:[{l:"A",t:"Inferior alveolar artery"},{l:"B",t:"Facial artery"},{l:"C",t:"Lingual artery"},{l:"D",t:"Ascending palatine artery"},{l:"E",t:"Superior alveolar artery"}],ans:"A"},
+{num:"60",q:"The victim has a cut wound in the area of the masseter muscle. What artery branches can be damaged in this case?",opts:[{l:"A",t:"Lingual."},{l:"B",t:"Maxillary."},{l:"C",t:"Occipital."},{l:"D",t:"Superficial temporal."},{l:"E",t:"Posterior auricular"}],ans:"B"},
+{num:"61",q:"The child has a laceration in the left cheek. Scarlet blood pours from the wound in a trickle. Where and which artery should be pressed to stop bleeding?",opts:[{l:"A",t:"The facial artery in the region of the edge of the lower jaw in front of the masseter muscle."},{l:"B",t:"The maxillary artery in the neck of the lower jaw."},{l:"C",t:"Infraorbital artery in the zygomatic arch."},{l:"D",t:"Lingual artery in the angle of the mandible."},{l:"E",t:"Mandibular artery in the chin area."}],ans:"A"},
+{num:"62",q:"As a result of trauma, the patient has a fracture of the branch of the lower jaw. Which artery can be damaged?",opts:[{l:"A",t:"Lingual artery"},{l:"B",t:"Superficial temporal artery"},{l:"C",t:"Inferior alveolar artery"},{l:"D",t:"Ascending pharyngeal artery"},{l:"E",t:"Superior thyroid artery."}],ans:"C"},
+{num:"63",q:"The victim has a wound in the neck. There is bleeding from the common carotid artery. Which anatomical structure should the artery is pressed against to stop bleeding?",opts:[{l:"A",t:"To the body of the VII cervical vertebra"},{l:"B",t:"To the anterior tubercle of the transverse process of the VI cervical vertebra"},{l:"C",t:"To the transverse process of the VII cervical vertebra"},{l:"D",t:"To the posterior tubercle of the transverse process of the VI cervical vertebra"},{l:"E",t:"To the anterior tubercle of the transverse process of the V cervical vertebra"}],ans:"B"},
+{num:"64",q:"A patient complains of loss of sensation of the face skin and paralysis of muscle of mastication. Damage to which of the following nerves would result in such symptoms?",opts:[{l:"A",t:"Cranial nerve 5"},{l:"B",t:"Cranial nerve 7"},{l:"C",t:"Cranial nerve 9"},{l:"D",t:"Cranial nerve 10"},{l:"E",t:"Cranial nerve 11"}],ans:"B"},
+{num:"65",q:"A patient complains of double vision (diplopia), eye “looks down and out”. Damage to which of the following nerves would result in such symptoms?",opts:[{l:"A",t:"Cranial nerve 1"},{l:"B",t:"Cranial nerve 2"},{l:"C",t:"Cranial nerve 3"},{l:"D",t:"Cranial nerve 4"},{l:"E",t:"Cranial nerve 5"}],ans:"B"},
+{num:"66",q:"A patient complains of loss sense of smell. Damage to which of the following nerves would result in such symptoms?",opts:[{l:"A",t:"Cranial nerve 1"},{l:"B",t:"Cranial nerve 2"},{l:"C",t:"Cranial nerve 3"},{l:"D",t:"Cranial nerve 4"},{l:"E",t:"Cranial nerve 5"}],ans:"A"},
+{num:"67",q:"Following thyroidectomy, hoarseness of voice may occur. This condition is caused by damage of which of the following structure?",opts:[{l:"A",t:"Internal laryngeal nerve"},{l:"B",t:"Recurrent laryngeal nerve"},{l:"C",t:"Thyroarytenoid muscle"},{l:"D",t:"Vestibular folds"},{l:"E",t:"Vocal folds"}],ans:"B"},
+{num:"68",q:"A 40-year-old man complains of loss of sensation over the thyroid gland. Damage to which of the following nerves would result in such symptoms?",opts:[{l:"A",t:"Lesser occipital nerve"},{l:"B",t:"Great auricular nerve"},{l:"C",t:"Transverse cervical nerve"},{l:"D",t:"Supraclavicular nerve"},{l:"E",t:"Great occipital nerve"}],ans:"C"},
+{num:"69",q:"A 40-year-old man complains of loss of sensation over the thyroid gland. Damage to which of the following nerves would result in such symptoms?",opts:[{l:"A",t:"Lesser occipital nerve"},{l:"B",t:"Great auricular nerve"},{l:"C",t:"Transverse cervical nerve"},{l:"D",t:"Supraclavicular nerve"},{l:"E",t:"Great occipital nerve"}],ans:"C"},
+{num:"70",q:"Which of the following cranial nerves mediates balance and hearing?",opts:[{l:"A",t:"Oculomotor nerve"},{l:"B",t:"Trochlear nerve"},{l:"C",t:"Facial nerve"},{l:"D",t:"Vestibulocochlear nerve"},{l:"E",t:"Glossopharyngeal nerve"}],ans:"D"},
+{num:"71",q:"Which of the following cranial nerves mediates input from the carotid sinus?",opts:[{l:"A",t:"Facial nerve"},{l:"B",t:"Glossopharyngeal nerve"},{l:"C",t:"Vagus nerve"},{l:"D",t:"Hypoglossal nerve"},{l:"E",t:"Trigeminal nerve"}],ans:"C"},
+{num:"72",q:"Which of the following cranial nerves innervates parotid gland?",opts:[{l:"A",t:"Trigeminal nerve"},{l:"B",t:"Facial nerve"},{l:"C",t:"Vestibulocochlear nerve"},{l:"D",t:"Glossopharyngeal nerve"},{l:"E",t:"Vagus nerve"}],ans:"A"},
+{num:"73",q:"Which of the following nerves provides parasympathetic fibers to thoracic and abdominal viscera?",opts:[{l:"A",t:"Trigeminal nerve"},{l:"B",t:"Facial nerve"},{l:"C",t:"Vestibulocochlear nerve"},{l:"D",t:"Glossopharyngeal nerve"},{l:"E",t:"Vagus nerve"}],ans:"E"},
+{num:"74",q:"A sharp instrument passing through the superior orbital fissure would most likely sever which of the following structures?",opts:[{l:"A",t:"Abducens nerve"},{l:"B",t:"Facial nerve"},{l:"C",t:"Mandibular nerve"},{l:"D",t:"Maxillary nerve"},{l:"E",t:"Ophthalmic artery"}],ans:"A"},
+{num:"75",q:"Physical examination of the patient reveals an inability to turn head and to shrug shoulder. There is no any sensory loss. Which of the following nerves was most likely injured?",opts:[{l:"A",t:"Vestibulocochlear nerve"},{l:"B",t:"Glossopharyngeal nerve"},{l:"C",t:"Vagus nerve"},{l:"D",t:"Accessory nerve"},{l:"E",t:"Hypoglossal nerve"}],ans:"D"},
+{num:"76",q:"A sharp instrument passing through the jugular foramen would most likely sever which of the following structures?",opts:[{l:"A",t:"Abducens nerve"},{l:"B",t:"Facial nerve"},{l:"C",t:"Mandibular nerve"},{l:"D",t:"Glossopharyngeal nerve"},{l:"E",t:"Optic nerve"}],ans:"D"},
+{num:"77",q:"Which of the following nerves passes though the inferior orbital fissure?",opts:[{l:"A",t:"Trochlear nerve"},{l:"B",t:"Ophthalmic nerve"},{l:"C",t:"Maxillary nerve"},{l:"D",t:"Mandibular nerve"},{l:"E",t:"Facial nerve"}],ans:"B"},
+{num:"78",q:"Which of the following nerves passes though the foramen rotundum?",opts:[{l:"A",t:"Trochlear nerve"},{l:"B",t:"Ophthalmic nerve"},{l:"C",t:"Maxillary nerve"},{l:"D",t:"Mandibular nerve"},{l:"E",t:"Facial nerve"}],ans:"C"},
+{num:"79",q:"Which of the following nerves passes though the foramen ovale?",opts:[{l:"A",t:"Trochlear nerve"},{l:"B",t:"Ophthalmic nerve"},{l:"C",t:"Maxillary nerve"},{l:"D",t:"Mandibular nerve"},{l:"E",t:"Facial nerve"}],ans:"D"},
+{num:"80",q:"Which of the following nerves passes though the jugular foramen?",opts:[{l:"A",t:"Vagus nerve"},{l:"B",t:"Trochlear nerve"},{l:"C",t:"Mandibular nerve"},{l:"D",t:"Olfactory nerve"},{l:"E",t:"Vestibulocochlear nerve"}],ans:"A"},
+{num:"81",q:"Which of the following nerves passes though the hypoglossal canal?",opts:[{l:"A",t:"Olfactory nerve"},{l:"B",t:"Accessory nerve"},{l:"C",t:"Hypoglossal nerve"},{l:"D",t:"Optic nerve"},{l:"E",t:"Oculomotor nerve"}],ans:"C"},
+{num:"82",q:"From which of the following structures exits accessory nerve?",opts:[{l:"A",t:"Optic canal"},{l:"B",t:"Jugular foramen"},{l:"C",t:"Hypoglossal canal"},{l:"D",t:"Internal acoustic meatus"},{l:"E",t:"Superior orbital fissure"}],ans:"B"},
+{num:"83",q:"From which of the following structures exits vestibulocochlear nerve?",opts:[{l:"A",t:"Optic canal"},{l:"B",t:"Jugular foramen"},{l:"C",t:"Hypoglossal canal"},{l:"D",t:"Internal acoustic meatus"},{l:"E",t:"Superior orbital fissure"}],ans:"D"},
+{num:"84",q:"From which of the following structures exits facial nerve?",opts:[{l:"A",t:"Optic canal"},{l:"B",t:"Jugular foramen"},{l:"C",t:"Hypoglossal canal"},{l:"D",t:"Internal acoustic meatus"},{l:"E",t:"Superior orbital fissure"}],ans:"D"},
+{num:"85",q:"From which of the following structures exits optic nerve?",opts:[{l:"A",t:"Optic canal"},{l:"B",t:"Jugular foramen"},{l:"C",t:"Hypoglossal canal"},{l:"D",t:"Internal acoustic meatus"},{l:"E",t:"Superior orbital fissure"}],ans:"A"},
+{num:"86",q:"A 75-year-old man with a 40-pack-year history smoking and hypercholesterolemia is diagnosed with severe atherosclerosis. Atherosclerotic occlusion of which of the following arteries would result in insufficient perfusion of the cerebellum?",opts:[{l:"A",t:"External carotid artery"},{l:"B",t:"Ascending pharyngeal artery"},{l:"C",t:"Internal carotid artery"},{l:"D",t:"Vertebral artery"},{l:"E",t:"Axillary artery"}],ans:"D"},
+{num:"87",q:"Middle cerebral artery is a branch of which of the following arteries?",opts:[{l:"A",t:"External carotid artery"},{l:"B",t:"Internal carotid artery"},{l:"C",t:"Subclavian artery"},{l:"D",t:"Vertebral artery"},{l:"E",t:"Axillary artery"}],ans:"B"},
+{num:"88",q:"Vertebral artery is a branch of which of the following arteries?",opts:[{l:"A",t:"External carotid artery"},{l:"B",t:"Internal carotid artery"},{l:"C",t:"Subclavian artery"},{l:"D",t:"Axillary artery"},{l:"E",t:"Basilar artery"}],ans:"C"},
+{num:"89",q:"Ophthalmic artery is a branch of which of the following arteries?",opts:[{l:"A",t:"External carotid artery"},{l:"B",t:"Internal carotid artery"},{l:"C",t:"Subclavian artery"},{l:"D",t:"Vertebral artery"},{l:"E",t:"Axillary artery"}],ans:"B"},
+{num:"90",q:"An arteriogram is performed on a patient with atherosclerosis. Luminal narrowing of which of the following vessels would compromise blood flow through the middle cerebral artery?",opts:[{l:"A",t:"External carotid artery"},{l:"B",t:"Internal carotid artery"},{l:"C",t:"Internal thoracic artery"},{l:"D",t:"Axillary artery"},{l:"E",t:"Vertebral artery"}],ans:"B"},
+{num:"91",q:"A 85-year-old man with a 40-pack-year history smoking is diagnosed with severe atherosclerosis. Atherosclerotic occlusion of which of the following arteries would result in insufficient perfusion of the cerebellum?",opts:[{l:"A",t:"External carotid artery"},{l:"B",t:"Ascending pharyngeal artery"},{l:"C",t:"Internal carotid artery"},{l:"D",t:"Vertebral artery"},{l:"E",t:"Axillary artery"}],ans:"D"},
+{num:"92",q:"To which of the following veins empties the transverse sinus?",opts:[{l:"A",t:"Internal jugular vein"},{l:"B",t:"External jugular vein"},{l:"C",t:"Vertebral vein"},{l:"D",t:"Facial vein"},{l:"E",t:"Anterior jugular vein"}],ans:"A"},
+{num:"93",q:"Which of the following sinuses empties into the straight sinus?",opts:[{l:"A",t:"Transverse sinus"},{l:"B",t:"Superior sagittal sinus"},{l:"C",t:"Inferior sagittal sinus"},{l:"D",t:"Dural sinus"},{l:"E",t:"Occipital sinus"}],ans:"A"},
+{num:"94",q:"A patient complains of loss of sensation over the dorsum of the hand in the area of the first dorsal web space. Damage to which of the following nerves would result in such symptoms?",opts:[{l:"A",t:"Radial nerve"},{l:"B",t:"Musculocutaneus nerve"},{l:"C",t:"Median nerve"},{l:"D",t:"Medial antebrachial cutaneous nerve"},{l:"E",t:"Ulnar nerve"}],ans:"A"},
+{num:"95",q:"A patient complains of loss of sensation on medial aspect of the forearm. Damage to which of the following nerves would result in such symptoms?",opts:[{l:"A",t:"Radial nerve"},{l:"B",t:"Musculocutaneus nerve"},{l:"C",t:"Median nerve"},{l:"D",t:"Medial antebrachial cutaneous nerve"},{l:"E",t:"Ulnar nerve"}],ans:"C"},
+{num:"96",q:"Axillary artery is continuation of which of the following arteries?",opts:[{l:"A",t:"External carotid artery"},{l:"B",t:"Internal carotid artery"},{l:"C",t:"Subclavian artery"},{l:"D",t:"Vertebral artery"},{l:"E",t:"Radial artery"}],ans:"C"},
+{num:"97",q:"Which of the following arteries is terminal branch of brachial artery?",opts:[{l:"A",t:"Anterior and middle cerebral artery"},{l:"B",t:"Anterior and posterior humeral circumflex arteries"},{l:"C",t:"Vertebral and brachial arteries"},{l:"D",t:"Radial and ulnar arteries"},{l:"E",t:"Deep brachial and superior ulnar collateral arteries"}],ans:"D"},
+{num:"98",q:"Lateral thoracic artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Ulnar artery"},{l:"B",t:"Radial artery"},{l:"C",t:"Brachial artery"},{l:"D",t:"Axillary artery"},{l:"E",t:"Subclavian artery"}],ans:"E"},
+{num:"99",q:"Subscapular artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Ulnar artery"},{l:"B",t:"Subclavian artery"},{l:"C",t:"Axillary artery"},{l:"D",t:"Brachial artery"},{l:"E",t:"Radial artery"}],ans:"B"},
+{num:"100",q:"Deep brachial artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Ulnar artery"},{l:"B",t:"Subclavian artery"},{l:"C",t:"Axillary artery"},{l:"D",t:"Brachial artery"},{l:"E",t:"Radial artery"}],ans:"D"},
+{num:"101",q:"Common interosseous artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Ulnar artery"},{l:"B",t:"Subclavian artery"},{l:"C",t:"Axillary artery"},{l:"D",t:"Brachial artery"},{l:"E",t:"Radial artery"}],ans:"A"},
+{num:"102",q:"Superficial palmar arch is the main termination of which of the following arteries?",opts:[{l:"A",t:"Ulnar artery"},{l:"B",t:"Subclavian artery"},{l:"C",t:"Axillary artery"},{l:"D",t:"Brachial artery"},{l:"E",t:"Radial artery"}],ans:"A"},
+{num:"103",q:"Deep palmar arch is the main termination of which of the following arteries?",opts:[{l:"A",t:"Ulnar artery"},{l:"B",t:"Subclavian artery"},{l:"C",t:"Axillary artery"},{l:"D",t:"Brachial artery"},{l:"E",t:"Radial artery"}],ans:"E"},
+{num:"104",q:"Which of the following veins is superficial vein of the upper limb?",opts:[{l:"A",t:"Great saphenous vein"},{l:"B",t:"Radial vein"},{l:"C",t:"Brachial vein"},{l:"D",t:"Cephalic vein"},{l:"E",t:"Small saphenous vein"}],ans:"D"},
+{num:"105",q:"Which of the following veins is superficial vein of the upper limb?",opts:[{l:"A",t:"Great saphenous vein"},{l:"B",t:"Basilic vein"},{l:"C",t:"Radial vein"},{l:"D",t:"Brachial vein"},{l:"E",t:"Small saphenous vein"}],ans:"B"},
+{num:"106",q:"Which of the following veins connects superior vena cava and inferior vena cava?",opts:[{l:"A",t:"Rectal"},{l:"B",t:"Esophageal"},{l:"C",t:"Hepatic"},{l:"D",t:"Epigastric"},{l:"E",t:"Mesenteric"}],ans:"D"},
+{num:"107",q:"Which of the following veins empties into the azygos vein?",opts:[{l:"A",t:"Hemiazygos vein"},{l:"B",t:"Portal vein"},{l:"C",t:"Jugular vein"},{l:"D",t:"Inferior rectal vein"},{l:"E",t:"Hepatic vein"}],ans:"A"},
+{num:"108",q:"Superior phrenic artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Internal carotid"},{l:"C",t:"Internal thoracic"},{l:"D",t:"Abdominal aorta"},{l:"E",t:"Thoracic aorta"}],ans:"E"},
+{num:"109",q:"Inferior phrenic artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Internal carotid"},{l:"C",t:"Internal thoracic"},{l:"D",t:"Abdominal aorta"},{l:"E",t:"Thoracic aorta"}],ans:"D"},
+{num:"110",q:"Which of the following veins empties into the superior vena cava?",opts:[{l:"A",t:"Azygos vein"},{l:"B",t:"Hemiazygos vein"},{l:"C",t:"Jugular vein"},{l:"D",t:"Intercostal vein"},{l:"E",t:"Portal vein"}],ans:"A"},
+{num:"111",q:"A 65-year-old man presents to the emergency department because of chest pain. He is found to have a large inferior wall myocardial infarction. He is sent to the cardiac catheterization laboratory, where a stent is placed in one of his major coronary arteries. In which coronary artery was the stent most likely placed?",opts:[{l:"A",t:"Diagonal branch of the LAD"},{l:"B",t:"Left anterior descending artery"},{l:"C",t:"Left circumflex artery"},{l:"D",t:"Left marginal artery"},{l:"E",t:"Right coronary artery"}],ans:"B"},
+{num:"112",q:"Into which of the following veins does superior epigastric vein drain?",opts:[{l:"A",t:"Internal thoracic"},{l:"B",t:"Subclavian"},{l:"C",t:"Femoral"},{l:"D",t:"External iliac"},{l:"E",t:"Common iliac"}],ans:"A"},
+{num:"113",q:"Which of the following veins connecting superior vena cava and inferior vena cava?",opts:[{l:"A",t:"Azygos"},{l:"B",t:"Gonadal"},{l:"C",t:"Rectal"},{l:"D",t:"Splenic"},{l:"E",t:"Mesenteric"}],ans:"A"},
+{num:"114",q:"An arteriogram is performed on a patient with atherosclerosis. Luminal narrowing of which of the following vessels would compromise blood flow through the internal thoracic artery?",opts:[{l:"A",t:"Carotid artery"},{l:"B",t:"Celiac trunk"},{l:"C",t:"Subclavian artery"},{l:"D",t:"Thoracic aorta"},{l:"E",t:"Coronary artery"}],ans:"C"},
+{num:"115",q:"Posterior intercostal artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Internal carotid"},{l:"C",t:"Internal thoracic"},{l:"D",t:"Abdominal aorta"},{l:"E",t:"Thoracic aorta"}],ans:"E"},
+{num:"116",q:"Anterior intercostal artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Internal carotid"},{l:"C",t:"Internal thoracic"},{l:"D",t:"Abdominal aorta"},{l:"E",t:"Thoracic aorta"}],ans:"C"},
+{num:"117",q:"68-year-old man presents to the emergency department because of chest pain. He is found to have a large anterior wall myocardial infarction. Which coronary artery is most likely closed?",opts:[{l:"A",t:"Right coronary artery"},{l:"B",t:"Left anterior descending artery"},{l:"C",t:"Left circumflex artery"},{l:"D",t:"Left marginal artery"},{l:"E",t:"Right marginal artery"}],ans:"B"},
+{num:"118",q:"A common location for an abdominal aortic aneurysm is inferior to the renal arteries and extending to the bifurcation of the common iliac arteries. Repair involves resecting the diseased portion of the aorta and replacing it with a synthetic graft. Based on anatomic considerations, which structure is most at risk of ischemia during repair of an aneurysm at this specific location?",opts:[{l:"A",t:"Ascending colon"},{l:"B",t:"Sigmoid colon"},{l:"C",t:"Small intestine"},{l:"D",t:"Spleen"},{l:"E",t:"Stomach"}],ans:"A"},
+{num:"119",q:"A 75 year old man is diagnosed with severe atherosclerosis. Atherosclerotic occlusion of which of the following arteries would result in insufficient perfusion of the liver?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Inferior epigastric"},{l:"C",t:"Celiac trunk"},{l:"D",t:"Inferior mesenteric"},{l:"E",t:"Renal"}],ans:"C"},
+{num:"120",q:"A 79 year old man is diagnosed with severe atherosclerosis. Atherosclerotic occlusion of which of the following arteries would result in insufficient perfusion of the stomach?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Inferior epigastric"},{l:"C",t:"Celiac trunk"},{l:"D",t:"Inferior mesenteric"},{l:"E",t:"Renal"}],ans:"C"},
+{num:"121",q:"A 79 year old man is diagnosed with severe atherosclerosis. Atherosclerotic occlusion of which of the following arteries would result in insufficient perfusion of the ileum?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Inferior epigastric"},{l:"C",t:"Celiac trunk"},{l:"D",t:"Inferior mesenteric"},{l:"E",t:"Renal"}],ans:"A"},
+{num:"122",q:"A 75 year old man is diagnosed with severe atherosclerosis. Atherosclerotic occlusion of which of the following arteries would result in insufficient perfusion of the sigmoid colon?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Inferior epigastric"},{l:"C",t:"Celiac trunk"},{l:"D",t:"Inferior mesenteric"},{l:"E",t:"Renal"}],ans:"D"},
+{num:"123",q:"A 75 year old man is diagnosed with severe atherosclerosis. Atherosclerotic occlusion of which of the following arteries would result in insufficient perfusion of the jejunum?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Inferior epigastric"},{l:"C",t:"Celiac trunk"},{l:"D",t:"Inferior mesenteric"},{l:"E",t:"Renal"}],ans:"A"},
+{num:"124",q:"An arteriogram is performed on a patient with atherosclerosis. Luminal narrowing of which of the following vessels would compromise blood flow through the renal arteries?",opts:[{l:"A",t:"Common iliac artery"},{l:"B",t:"Celiac trunk"},{l:"C",t:"Superior mesenteric artery"},{l:"D",t:"Abdominal aorta"},{l:"E",t:"Internal iliac artery"}],ans:"D"},
+{num:"125",q:"Right gastric artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Splenic"},{l:"C",t:"Inferior mesenteric"},{l:"D",t:"Proper hepatic"},{l:"E",t:"Left gastric"}],ans:"D"},
+{num:"126",q:"Gastroduodenal artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Splenic Inferior mesenteric"},{l:"C",t:"Common hepatic"},{l:"D",t:"Left gastric"}],ans:"C"},
+{num:"127",q:"Right gastroepiploic artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Left renal"},{l:"C",t:"Gastroduodenal"},{l:"D",t:"Inferior mesenteric"},{l:"E",t:"Left gastric"}],ans:"C"},
+{num:"128",q:"Superior pancreatoduodenal artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Splenic"},{l:"C",t:"Gastroduodenal"},{l:"D",t:"Inferior mesenteric"},{l:"E",t:"Left gastric"}],ans:"C"},
+{num:"129",q:"Inferior pancreatoduodenal artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Splenic"},{l:"C",t:"Gastroduodenal"},{l:"D",t:"Inferior mesenteric"},{l:"E",t:"Proper hepatic"}],ans:"A"},
+{num:"130",q:"Right gastroepiploic artery is a branch of gastroduodenal artery and anastomoses with left gastroepiploic artery. From which of the following arteries does left gastroepiploic artery arise?",opts:[{l:"A",t:"Common hepatic"},{l:"B",t:"Proper hepatic"},{l:"C",t:"Left gastric"},{l:"D",t:"Splenic"},{l:"E",t:"Superior mesenteric"}],ans:"D"},
+{num:"131",q:"Superior pancreatoduodenal artery is a branch of gastroduodenal artery and anastamoses with inferior pancreatoduodenal artery. From which of the following arteries does inferior pancreatoduodenal artery arise?",opts:[{l:"A",t:"Common hepatic"},{l:"B",t:"Proper hepatic"},{l:"C",t:"Left gastric"},{l:"D",t:"Splenic"},{l:"E",t:"Superior mesenteric"}],ans:"E"},
+{num:"132",q:"Left gastric artery is a branch of celiac trunk and anastamoses with right gastric artery. From which of the following arteries does right gastric artery arise?",opts:[{l:"A",t:"Common hepatic"},{l:"B",t:"Proper hepatic"},{l:"C",t:"Left gastric"},{l:"D",t:"Splenic"},{l:"E",t:"Superior mesenteric"}],ans:"B"},
+{num:"133",q:"Which of the following veins empties into the splenic vein?",opts:[{l:"A",t:"Azygos vein"},{l:"B",t:"Hemiazygos vein"},{l:"C",t:"Superior suprarenal vein"},{l:"D",t:"Inferior mesenteric vein"},{l:"E",t:"Left gonadal vein"}],ans:"D"},
+{num:"134",q:"Which of the following veins empties into the inferior vena cava?",opts:[{l:"A",t:"Hepatic"},{l:"B",t:"Left suprarenal"},{l:"C",t:"Left gonadal"},{l:"D",t:"Jugular vein"},{l:"E",t:"Intercostal vein"}],ans:"A"},
+{num:"135",q:"Which of the following veins empties into the inferior vena cava?",opts:[{l:"A",t:"Femoral"},{l:"B",t:"Left suprarenal"},{l:"C",t:"Right gonadal"},{l:"D",t:"Jugular vein"},{l:"E",t:"Intercostal vein"}],ans:"C"},
+{num:"136",q:"Which of the following veins empties into the left renal vein?",opts:[{l:"A",t:"Hepatic"},{l:"B",t:"Left suprarenal"},{l:"C",t:"Right suprarenal"},{l:"D",t:"Left lumbar"},{l:"E",t:"Lest gastric"}],ans:"B"},
+{num:"137",q:"Which of the following veins empties into the left renal vein?",opts:[{l:"A",t:"Hepatic"},{l:"B",t:"Right suprarenal"},{l:"C",t:"Left lumbar"},{l:"D",t:"Left gonadal"},{l:"E",t:"Left gastric"}],ans:"D"},
+{num:"138",q:"Which of the following veins empties into the portal vein?",opts:[{l:"A",t:"Left gastric"},{l:"B",t:"Left suprarenal"},{l:"C",t:"Left gonadal"},{l:"D",t:"Left renal"},{l:"E",t:"Intercostals vein"}],ans:"A"},
+{num:"139",q:"Which of the following veins joins the superior mesenteric vein to form the portal vein?",opts:[{l:"A",t:"Left gastric"},{l:"B",t:"Splenic"},{l:"C",t:"Inferior mesenteric"},{l:"D",t:"Left renal"},{l:"E",t:"Hepatic"}],ans:"C"},
+{num:"140",q:"A 54 years old man has cirrhosis, with obstruction of the portal circulation within the liver. Portal blood could still be conveyed to the caval system via which of the following?",opts:[{l:"A",t:"Azygos and hemiazygos veins"},{l:"B",t:"Gonadal veins"},{l:"C",t:"External iliac veins"},{l:"D",t:"Splenic vein"},{l:"E",t:"Superior mesenteric veins"}],ans:"E"},
+{num:"141",q:"A 44 years old man has cirrhosis, with obstruction of the portal circulation within the liver. Portal blood could still be conveyed to the caval system via which of the following?",opts:[{l:"A",t:"Renal veins"},{l:"B",t:"Gonadal veins"},{l:"C",t:"Suprarenal veins"},{l:"D",t:"Splenic vein"},{l:"E",t:"Rectal veins"}],ans:"E"},
+{num:"142",q:"Into which of the following veins does superior rectal vein drain?",opts:[{l:"A",t:"Inferior vena cava"},{l:"B",t:"Superior mesenteric"},{l:"C",t:"Left renal"},{l:"D",t:"Internal iliac"},{l:"E",t:"Inferior mesenteric"}],ans:"E"},
+{num:"143",q:"Paraumbilical vein is a branch of which of the following veins?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"External iliac"},{l:"C",t:"Femoral"},{l:"D",t:"Portal"},{l:"E",t:"Inferior vena cava"}],ans:"D"},
+{num:"144",q:"Right and left gastric veins drains into",opts:[{l:"A",t:"Portal vein"},{l:"B",t:"Splenic vein"},{l:"C",t:"Hepatic vein"},{l:"D",t:"Cystic vein"},{l:"E",t:"Renal vein"}],ans:"B"},
+{num:"145",q:"A 75 year old man with a 40 pack year history of smoking is diagnosed with severe atherosclerosis. Atherosclerotic occlusion of which of the following arteries would result in insufficient perfusion of the urinary bladder?",opts:[{l:"A",t:"External iliac"},{l:"B",t:"Inferior epigastric"},{l:"C",t:"Internal iliac"},{l:"D",t:"Internal pudendal"},{l:"E",t:"Lateral sacral"}],ans:"C"},
+{num:"146",q:"An arteriogram is performed on a patient with atherosclerosis. Luminal narrowing of which of the following vessels would compromise blood flow through the middle rectal artery?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Celiac trunk"},{l:"C",t:"Inferior mesenteric"},{l:"D",t:"Internal iliac"},{l:"E",t:"External iliac"}],ans:"D"},
+{num:"147",q:"Superior rectal artery is a branch of inferior mesenteric artery and anastamoses with middle rectal artery. From which of the following arteries does middle rectal artery arise?",opts:[{l:"A",t:"Superior mesenteric"},{l:"B",t:"Abdominal aorta"},{l:"C",t:"Internal iliac"},{l:"D",t:"External iliac"},{l:"E",t:"Common iliac"}],ans:"C"},
+{num:"148",q:"Which of the following arteries is branch of external iliac artery?",opts:[{l:"A",t:"Superficial epigastric a."},{l:"B",t:"Inferior epigastric a."},{l:"C",t:"Superior epigastric a."},{l:"D",t:"Lateral superior genicular a."},{l:"E",t:"Anterior tibial a."}],ans:"B"},
+{num:"149",q:"Lateral sacral artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Internal carotid"},{l:"C",t:"Internal thoracic"},{l:"D",t:"External iliac"},{l:"E",t:"Abdominal aorta"}],ans:"D"},
+{num:"150",q:"Median sacral artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Internal carotid"},{l:"C",t:"Internal thoracic"},{l:"D",t:"External iliac"},{l:"E",t:"Abdominal aorta"}],ans:"E"},
+{num:"151",q:"Which of the following structures does medial umbilical fold contain?",opts:[{l:"A",t:"Obliterated umbilical artery"},{l:"B",t:"Urachus"},{l:"C",t:"Inferior epigastric artery"},{l:"D",t:"Superior epigastric artery"},{l:"E",t:"Superficial epigastric artery"}],ans:"B"},
+{num:"152",q:"Which of the following structures does lateral umbilical fold contain?",opts:[{l:"A",t:"Obliterated umbilical artery"},{l:"B",t:"Urachus"},{l:"C",t:"Inferior epigastric artery"},{l:"D",t:"Superior epigastric artery"},{l:"E",t:"Superficial epigastric artery"}],ans:"A"},
+{num:"153",q:"Which of the following artery is the continuation of external iliac artery?",opts:[{l:"A",t:"Popliteal artery"},{l:"B",t:"Gluteal artery"},{l:"C",t:"Obturator artery"},{l:"D",t:"Femoral artery"},{l:"E",t:"Renal artery"}],ans:"D"},
+{num:"154",q:"Gluteal region is largely supplied by superior and inferior gluteal arteries through",opts:[{l:"A",t:"Greater sciatic foramen"},{l:"B",t:"Abductor magnus"},{l:"C",t:"Abductor hiatus"},{l:"D",t:"Interosseous membrane"},{l:"E",t:"Obturator canal"}],ans:"A"},
+{num:"155",q:"Which of the following artery arises from internal iliac artery?",opts:[{l:"A",t:"Obturator artery"},{l:"B",t:"Femoral artery"},{l:"C",t:"Fibular artery"},{l:"D",t:"Popliteal artery"},{l:"E",t:"Renal artery"}],ans:"A"},
+{num:"156",q:"Superior vesical artery represents the persistent part of",opts:[{l:"A",t:"Umbilical artery"},{l:"B",t:"Internal iliac artery"},{l:"C",t:"External iliac artery"},{l:"D",t:"Femoral artery"},{l:"E",t:"Placenta"}],ans:"A"},
+{num:"157",q:"Common iliac arteries are the terminal branches of",opts:[{l:"A",t:"Abdominal aorta"},{l:"B",t:"Thoracic aorta"},{l:"C",t:"Carotid artery"},{l:"D",t:"Femoral artery"},{l:"E",t:"Brachial artery"}],ans:"A"},
+{num:"158",q:"Which of the following statements about the inferior epigastric artery is correct?",opts:[{l:"A",t:"It arises from external iliac artery just above the level of inguinal ligament"},{l:"B",t:"It anostamoses with deep femoral arter"},{l:"C",t:"It is intimately related to the deep inguinal ring"},{l:"D",t:"It gives of the deep circumflex iliac artery"},{l:"E",t:"It gives of pubic branch which when large may form the abnormal obturator artery"}],ans:"A"},
+{num:"159",q:"Left and Right common iliac veins drains into",opts:[{l:"A",t:"Femoral"},{l:"B",t:"External iliac"},{l:"C",t:"Internal iliac"},{l:"D",t:"Inferior vena cava"},{l:"E",t:"Portal vein"}],ans:"D"},
+{num:"160",q:"External iliac vein joins internal iliac vein and then drains into",opts:[{l:"A",t:"Common iliac vein"},{l:"B",t:"Popliteal vein"},{l:"C",t:"Femoral vein"},{l:"D",t:"Anterior tibial"},{l:"E",t:"Renal vein"}],ans:"A"},
+{num:"161",q:"Which artery supplies the muscles in the lateral side of the thigh?",opts:[{l:"A",t:"posterior tibial artery"},{l:"B",t:"popliteal artery"},{l:"C",t:"lateral femoral circumflex artery"},{l:"D",t:"medial femoral circumflex artery"},{l:"E",t:"anterior tibial artery"}],ans:"C"},
+{num:"162",q:"Which artery supplies the neck and head of the femur bone?",opts:[{l:"A",t:"dorsal pedis artery"},{l:"B",t:"medial femoral circumflex artery"},{l:"C",t:"anterior tibial artery"},{l:"D",t:"obturator artery"},{l:"E",t:"digital arteries"}],ans:"B"},
+{num:"163",q:"Which of the following joint is supplied by popliteal artery?",opts:[{l:"A",t:"vertebral joint"},{l:"B",t:"ankle joint"},{l:"C",t:"hip joint"},{l:"D",t:"knee joint"},{l:"E",t:"shoulder joint"}],ans:"D"},
+{num:"164",q:"Anterior tibial artery anteriorly continuous as",opts:[{l:"A",t:"Dorsal pedis artery"},{l:"B",t:"Digital artery"},{l:"C",t:"Popliteal artery"},{l:"D",t:"Planter arch"},{l:"E",t:"Fibular artery"}],ans:"A"},
+{num:"165",q:"Branches regarding to femoral artery?",opts:[{l:"A",t:"Fibular artery"},{l:"B",t:"Superficial epigastric artery"},{l:"C",t:"Gluteal artery"},{l:"D",t:"Anterior tibial artery"},{l:"E",t:"Obturator artery"}],ans:"B"},
+{num:"166",q:"Popliteal artery is the continuation of",opts:[{l:"A",t:"Femoral artery"},{l:"B",t:"Tibial artery"},{l:"C",t:"Internal pudendal artery"},{l:"D",t:"Obturator artery"},{l:"E",t:"Internal iliac artery"}],ans:"B"},
+{num:"167",q:"Which of the following artery is used for auscultation while measuring blood pressure in lower limb?",opts:[{l:"A",t:"Femoral artery"},{l:"B",t:"Popliteal artery"},{l:"C",t:"Fibular artery"},{l:"D",t:"Tibial artery"},{l:"E",t:"External iliac artery"}],ans:"B"},
+{num:"168",q:"Which branch of femoral artery supplies the lower part of anterior abdominal wall?",opts:[{l:"A",t:"External pudendal artery"},{l:"B",t:"Profundal femoral artery"},{l:"C",t:"Descending genicular artery"},{l:"D",t:"Perforating branches"},{l:"E",t:"Superficial epigastric artery"}],ans:"E"},
+{num:"169",q:"Lower border of popliteal artery terminates into",opts:[{l:"A",t:"Fibular artery"},{l:"B",t:"Renal artery"},{l:"C",t:"Gluteal artery"},{l:"D",t:"Posterior tibial artery"},{l:"E",t:"Femoral artery"}],ans:"D"},
+{num:"170",q:"External iliac artery continues as?",opts:[{l:"A",t:"Obturator"},{l:"B",t:"Popliteal"},{l:"C",t:"Fibular"},{l:"D",t:"Lateral femoral circumflex"},{l:"E",t:"Femoral"}],ans:"E"},
+{num:"171",q:"The popliteal vein becomes femoral vein after passing the",opts:[{l:"A",t:"Adductor hiatus"},{l:"B",t:"Femur"},{l:"C",t:"Sartorius muscle"},{l:"D",t:"Inguinal ligament"},{l:"E",t:"Knee"}],ans:"E"},
+{num:"172",q:"Femoral vein becomes external iliac vein after passing",opts:[{l:"A",t:"Inguinal ligament"},{l:"B",t:"Femur"},{l:"C",t:"Knee"},{l:"D",t:"Pubis symphysis"},{l:"E",t:"Adductor hiatus"}],ans:"A"},
+{num:"173",q:"Which of the following veins empties into the femoral vein?",opts:[{l:"A",t:"Hepatic"},{l:"B",t:"Greater saphenous"},{l:"C",t:"Small saphenous"},{l:"D",t:"Anterior tibial"},{l:"E",t:"Posterior tibial"}],ans:"B"},
+{num:"174",q:"Which of the following veins empties into the popliteal vein?",opts:[{l:"A",t:"Hepatic"},{l:"B",t:"Greater saphenous"},{l:"C",t:"Small saphenous"},{l:"D",t:"Anterior tibial"},{l:"E",t:"Posterior tibial"}],ans:"C"},
+{num:"175",q:"Into which of the following veins does greater saphenous vein drain?",opts:[{l:"A",t:"Anterior tibial"},{l:"B",t:"External iliac"},{l:"C",t:"Femoral"},{l:"D",t:"Common iliac"},{l:"E",t:"Popliteal"}],ans:"C"},
+{num:"176",q:"Into which of the following veins does small saphenous vein drain?",opts:[{l:"A",t:"Anterior tibialis"},{l:"B",t:"Popliteal"},{l:"C",t:"Femoral"},{l:"D",t:"External iliac"},{l:"E",t:"Common iliac"}],ans:"B"},
+{num:"177",q:"Which of the following veins is superficial vein of the lower limb?",opts:[{l:"A",t:"Great saphenous vein"},{l:"B",t:"Basilic vein"},{l:"C",t:"Cephalic vein"},{l:"D",t:"Popliteal vein"},{l:"E",t:"Femoral vein"}],ans:"A"},
+{num:"178",q:"Which of the following veins is superficial vein of the lower limb?",opts:[{l:"A",t:"External iliac"},{l:"B",t:"Basilic vein"},{l:"C",t:"Cephalic vein"},{l:"D",t:"Popliteal vein"},{l:"E",t:"Small saphenous vein"}],ans:"E"},
+{num:"179",q:"Which of the following arteries is branch of dorsal pedis a.?",opts:[{l:"A",t:"Lateral tarsal a."},{l:"B",t:"Fibular circumflex a."},{l:"C",t:"Peroneal a."},{l:"D",t:"Anterior tibial a."}],ans:"D"},
+{num:"180",q:"Which of the following arteries is branch of anterior tibial artery?",opts:[{l:"A",t:"Peroneal a."},{l:"B",t:"Popliteal a."},{l:"C",t:"Medial tarsal a."},{l:"D",t:"Lateral tarsal a."},{l:"E",t:"Anterior tibial recurrent a."}],ans:"E"},
+{num:"181",q:"Which of the following arteries is branch of posterior tibial artery?",opts:[{l:"A",t:"Peroneal a."},{l:"B",t:"Popliteal a."},{l:"C",t:"Medial tarsal a."},{l:"D",t:"Lateral tarsal a."},{l:"E",t:"Anterior tibial recurrent a."}],ans:"A"},
+{num:"182",q:"Which of the following arteries is branch of popliteal artery?",opts:[{l:"A",t:"Peroneal a."},{l:"B",t:"Descending genicular a."},{l:"C",t:"Medial tarsal a."},{l:"D",t:"Lateral superior genicular a."},{l:"E",t:"Anterior tibial recurrent a."}],ans:"D"},
+{num:"183",q:"Which of the following arteries is branch of popliteal artery?",opts:[{l:"A",t:"Femoral a."},{l:"B",t:"Middle genicular a."},{l:"C",t:"Descending genicular a."},{l:"D",t:"Medial tarsal a."},{l:"E",t:"Anterior tibial recurrent a."}],ans:"B"},
+{num:"184",q:"Superficial epigastric artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Internal carotid"},{l:"C",t:"Internal thoracic"},{l:"D",t:"External iliac"},{l:"E",t:"Femoral"}],ans:"E"},
+{num:"185",q:"Inferior epigastric artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Internal carotid"},{l:"C",t:"Internal thoracic"},{l:"D",t:"External iliac"},{l:"E",t:"Femoral"}],ans:"D"},
+{num:"186",q:"Superior epigastric artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Internal carotid"},{l:"C",t:"Internal thoracic"},{l:"D",t:"External iliac"},{l:"E",t:"Femoral"}],ans:"C"},
+{num:"187",q:"Deep circumflex iliac artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Internal carotid"},{l:"C",t:"Internal thoracic"},{l:"D",t:"External iliac"},{l:"E",t:"Femoral"}],ans:"D"},
+{num:"188",q:"Internal pudendal artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Internal carotid"},{l:"C",t:"Internal thoracic"},{l:"D",t:"External iliac"},{l:"E",t:"Femoral"}],ans:"A"},
+{num:"189",q:"Which is the largest branch of lumbar plexus?",opts:[{l:"A",t:"Obturator nerve"},{l:"B",t:"Accessory obturator nerve"},{l:"C",t:"Lateralcutaneous nerve"},{l:"D",t:"Femoral nerve"},{l:"E",t:"Ilioinguinal nerve"}],ans:"D"},
+{num:"190",q:"Which one of the following lumbar spinal nerve contributes to sacral plexus ?",opts:[{l:"A",t:"Lumbar 3."},{l:"B",t:"Lumbar 5."},{l:"C",t:"Lumbar 1."},{l:"D",t:"Lumbar 2."},{l:"E",t:"Lumbar 4"}],ans:"B"},
+{num:"191",q:"Which of the following thoracic nerve contributes to lumbar plexus?",opts:[{l:"A",t:"T10."},{l:"B",t:"T12."},{l:"C",t:"T11."},{l:"D",t:"T8."},{l:"E",t:"T9"}],ans:"B"},
+{num:"192",q:"Which of the following spinal nerves mediates the sense over the posterior thigh?",opts:[{l:"A",t:"Femoral nerve"},{l:"B",t:"Lateral femoral cutaneous nerve"},{l:"C",t:"Posterior femoral cutaneous nerve"},{l:"D",t:"Obturator nerve"},{l:"E",t:"Sciatic nerve"}],ans:"C"},
+{num:"193",q:"Which of the following spinal nerves mediates the sense over the lateral thigh?",opts:[{l:"A",t:"Femoral nerve"},{l:"B",t:"Lateral femoral cutaneous nerve"},{l:"C",t:"Posterior femoral cutaneous nerve"},{l:"D",t:"Obturator nerve"},{l:"E",t:"Sciatic nerve"}],ans:"B"},
+{num:"194",q:"Which of the following spinal nerves mediates the sense over the medial thigh?",opts:[{l:"A",t:"Femoral nerve"},{l:"B",t:"Lateral femoral cutaneous nerve"},{l:"C",t:"Posterior femoral cutaneous nerve"},{l:"D",t:"Obturator nerve"},{l:"E",t:"Sciatic nerve"}],ans:"A"},
+{num:"195",q:"Which of the following spinal nerves mediates the sense over the anterior thigh and median side of the food?",opts:[{l:"A",t:"Femoral nerve"},{l:"B",t:"Lateral femoral cutaneous nerve"},{l:"C",t:"Posterior femoral cutaneous nerve"},{l:"D",t:"Obturator nerve"},{l:"E",t:"Sciatic nerve"}],ans:"D"},
+{num:"196",q:"Which of the following spinal nerves innervates medial thigh muscles?",opts:[{l:"A",t:"Femoral nerve"},{l:"B",t:"Genitofemoral nerve"},{l:"C",t:"Iliohypogastric nerve"},{l:"D",t:"Obturator nerve"},{l:"E",t:"Sciatic nerve"}],ans:"A"},
+{num:"197",q:"Which of the following spinal nerves innervates posterior thigh muscles?",opts:[{l:"A",t:"Femoral nerve"},{l:"B",t:"Genitofemoral nerve"},{l:"C",t:"Iliohypogastric nerve"},{l:"D",t:"Obturator nerve"},{l:"E",t:"Sciatic nerve"}],ans:"E"},
+{num:"198",q:"Which of the following spinal nerves innervates anterior thigh muscles?",opts:[{l:"A",t:"Femoral nerve"},{l:"B",t:"Genitofemoral nerve"},{l:"C",t:"Iliohypogastric nerve"},{l:"D",t:"Obturator nerve"},{l:"E",t:"Sciatic nerve"}],ans:"A"},
+{num:"199",q:"Which of the following spinal nerves innervates cremaster muscle?",opts:[{l:"A",t:"Femoral nerve"},{l:"B",t:"Lateral femoral cutaneous nerve"},{l:"C",t:"Posterior femoral cutaneous nerve"},{l:"D",t:"Genitofemoral nerve"},{l:"E",t:"Iliohypogastric nerve"}],ans:"D"},
+{num:"200",q:"Intramuscular injection should be given in the upper, outer quadrant of the buttocks to prevent damage to which of the following nerves?",opts:[{l:"A",t:"Common peroneal"},{l:"B",t:"Lateral femoral cutaneous"},{l:"C",t:"Obturator"},{l:"D",t:"Sciatic"},{l:"E",t:"Superior gluteal"}],ans:"D"},
+{num:"201",q:"A patient presents to the physician complaining of “something wrong with her foot” that cause her to trip and fall. Physical examination reveals an inability to dorsiflex (extend) the food and a loss of sensation between the first and second toes. There is no other motor or sensory loss. Which of the following nerves was most likely injured?",opts:[{l:"A",t:"Deep peroneal"},{l:"B",t:"Femoral"},{l:"C",t:"Superficial peroneal"},{l:"D",t:"Sural"},{l:"E",t:"Tibial"}],ans:"A"},
+{num:"202",q:"Following thyroidectomy, hoarseness of voice may occur. This condition is caused by damage of which of the following structure?",opts:[{l:"A",t:"Internal laryngeal nerve"},{l:"B",t:"Recurrent laryngeal nerve"},{l:"C",t:"Thyroarytenoid muscle"},{l:"D",t:"Vestibular folds"},{l:"E",t:"Vocal folds"}],ans:"B"},
+{num:"203",q:"External pudendal artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Femoral"},{l:"C",t:"External iliac"},{l:"D",t:"Internal thoracic"},{l:"E",t:"Internal carotid"}],ans:"C"},
+{num:"204",q:"Which of the following artery passes over the dorsal aspect of tarsal bone?",opts:[{l:"A",t:"Tibial artery"},{l:"B",t:"Femoral artery"},{l:"C",t:"Plantar arch"},{l:"D",t:"Popliteal artery"},{l:"E",t:"Dorsal pedis artery"}],ans:"E"},
+{num:"205",q:"Which of the following arises from posterior tibial artery and supplies the lateral component of the leg?",opts:[{l:"A",t:"femoral artery"},{l:"B",t:"popliteal artery"},{l:"C",t:"dorsal pedis artery"},{l:"D",t:"obturator artery"},{l:"E",t:"fibular artery"}],ans:"E"},
+{num:"206",q:"Into which of the following veins does inferior epigastric vein drain?",opts:[{l:"A",t:"Inferior vena cava"},{l:"B",t:"Common iliac"},{l:"C",t:"External iliac"},{l:"D",t:"Femoral"},{l:"E",t:"Subclavian"}],ans:"C"},
+{num:"207",q:"Umbilical artery is a branch of which of the following arteries?",opts:[{l:"A",t:"Internal iliac"},{l:"B",t:"Femoral"},{l:"C",t:"External iliac"},{l:"D",t:"Internal thoracic"},{l:"E",t:"Internal carotid"}],ans:"A"},
+{num:"208",q:"Which of the following arteries is branch of femoral artery?",opts:[{l:"A",t:"Superficial epigastric a."},{l:"B",t:"Anterior tibial a."},{l:"C",t:"Lateral superior genicular a."},{l:"D",t:"Superior epigastric a."},{l:"E",t:"Inferior epigastric a."}],ans:"A"},
+{num:"209",q:"Which of the following arteries is the terminal branch of internal thoracic artery?",opts:[{l:"A",t:"Esophageal"},{l:"B",t:"Umbilical"},{l:"C",t:"Superior epigastric"},{l:"D",t:"Inferior epigastric"},{l:"E",t:"Posterior intercostal"}],ans:"C"}
+];
+// ============================================================
+// STATE
+// ============================================================
+var student={};
+var consentGiven=false;
+var examQuestions=[];
+var selectedRange={from:1,to:30,label:'Q1–Q30'};
+var examStartTime=null,examEndTime=null;
+var cur=0,visited={},answers={},marked={},submitted=false,seconds=0,timerInt=null,palFilter='all';
+var isOnline=navigator.onLine;
+var syncStatus='pending';
+var lastResult=null;
+var connCheckInt=null;
+var pendingSyncPrompted=false;
+
+// ============================================================
+// UTILS
+// ============================================================
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null}}
+function lsJ(k,v){try{if(v===undefined){var r=localStorage.getItem(k);return r?JSON.parse(r):null;}localStorage.setItem(k,JSON.stringify(v));}catch(e){return null}}
+function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
+
+function showToast(msg,type,dur){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.className='show '+(type||'');
+  clearTimeout(t._to);t._to=setTimeout(function(){t.className=''},dur||3000);
+}
+
+function getDeviceType(){
+  var w=window.innerWidth;
+  if(w<=600) return 'Mobile';
+  if(w<=1024) return 'Tablet';
+  return 'Desktop';
+}
+
+function pad(n){return n<10?'0'+n:n}
+function formatTime(secs){var h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=secs%60;return (h?pad(h)+':':'')+pad(m)+':'+pad(s)}
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload=function(){
+  setTimeout(function(){
+    document.getElementById('loading').style.display='none';
+    var dark=ls('cm_dark')==='1';
+    if(dark){document.body.classList.add('dark');document.getElementById('dark-btn').textContent='Light';}
+    consentGiven=ls('cm_consent')==='1';
+    if(!consentGiven){
+      document.getElementById('consent-page').style.display='flex';
+      return;
+    }
+    afterConsent();
+  },800);
+};
+
+// ============================================================
+// CONSENT
+// ============================================================
+function toggleConsent(){
+  var chk=document.getElementById('consent-check');
+  var row=document.getElementById('consent-check-row');
+  var btn=document.getElementById('consent-accept-btn');
+  row.classList.toggle('checked',chk.checked);
+  btn.classList.toggle('enabled',chk.checked);
+}
+function acceptConsent(){
+  if(!document.getElementById('consent-check').checked) return;
+  ls('cm_consent','1');
+  consentGiven=true;
+  document.getElementById('consent-page').style.display='none';
+  afterConsent();
+}
+function declineConsent(){
+  document.getElementById('consent-page').innerHTML=
+    '<div style="color:#fff;text-align:center;padding:40px;max-width:400px;margin:auto">'
+    +'<div style="font-size:3rem;margin-bottom:16px">🚫</div>'
+    +'<h2 style="margin-bottom:12px">Access Denied</h2>'
+    +'<p style="opacity:.8;margin-bottom:20px">You must accept the data consent to use this exam system.</p>'
+    +'<button onclick="location.reload()" style="background:#fff;color:#7b2ff7;border:none;border-radius:10px;padding:12px 24px;font-weight:700;cursor:pointer;font-size:.95rem">← Go Back</button>'
+    +'</div>';
+}
+function afterConsent(){
+  var sess=lsJ('cm_session');
+  var savedStudent=lsJ('cm_student');
+  if(savedStudent&&savedStudent.name){
+    student=savedStudent;
+    if(sess&&sess.answers&&Object.keys(sess.answers).length>0){
+      document.getElementById('recovery-banner').style.display='block';
+    }
+    document.getElementById('reg-name').value=student.name||'';
+    document.getElementById('reg-year').value=student.year||'';
+    document.getElementById('reg-group').value=student.group||'';
+    document.getElementById('reg-id').value=student.id||'';
+    document.getElementById('reg-email').value=student.email||'';
+    document.getElementById('reg-page').style.display='flex';
+  } else {
+    document.getElementById('reg-page').style.display='flex';
+  }
+  initConnectivityMonitor();
+}
+
+// ============================================================
+// SESSION RECOVERY
+// ============================================================
+function resumeSession(){
+  var sess=lsJ('cm_session');
+  if(!sess) return;
+  student=lsJ('cm_student')||{};
+  examQuestions=sess.examQuestions||[];
+  selectedRange=sess.selectedRange||{from:1,to:30,label:'Q1–Q30'};
+  cur=sess.cur||0;
+  visited=sess.visited||{};
+  answers=sess.answers||{};
+  marked=sess.marked||{};
+  seconds=sess.seconds||0;
+  submitted=false;
+  document.getElementById('reg-page').style.display='none';
+  showExamUI();
+  showToast('Session restored! Continue where you left off.','success',3000);
+}
+function discardSession(){
+  lsDel('cm_session');
+  document.getElementById('recovery-banner').style.display='none';
+  submitted=false;cur=0;visited={};answers={};marked={};seconds=0;
+}
+function saveSession(){
+  if(submitted) return;
+  lsJ('cm_session',{examQuestions:examQuestions,selectedRange:selectedRange,cur:cur,visited:visited,answers:answers,marked:marked,seconds:seconds});
+}
+window.addEventListener('beforeunload',function(){if(!submitted) saveSession();});
+
+// ============================================================
+// REGISTRATION
+// ============================================================
+function submitReg(){
+  var name=document.getElementById('reg-name').value.trim();
+  var year=document.getElementById('reg-year').value;
+  var group=document.getElementById('reg-group').value.trim();
+  var id=document.getElementById('reg-id').value.trim();
+  var email=document.getElementById('reg-email').value.trim();
+  var ok=true;
+  function setE(eid,inp,show){document.getElementById(eid).classList.toggle('show',show);document.getElementById(inp).classList.toggle('error',show);}
+  if(!name){setE('err-name','reg-name',true);ok=false;}else{setE('err-name','reg-name',false);}
+  if(!year){setE('err-year','reg-year',true);ok=false;}else{setE('err-year','reg-year',false);}
+  if(!group){setE('err-group','reg-group',true);ok=false;}else{setE('err-group','reg-group',false);}
+  if(!ok) return;
+  var now=new Date();
+  var dateStr=now.getFullYear().toString()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0');
+  var rand=Math.floor(1000+Math.random()*9000);
+  var autoId='PW-AJ-'+dateStr+'-'+rand;
+  document.getElementById('reg-id').value=autoId;
+  id=autoId;
+  student={name:name,year:year,group:group,id:id,email:email};
+  lsJ('cm_student',student);
+  lsDel('cm_session');
+  document.getElementById('reg-page').style.display='none';
+  showRangePage();
+}
+
+// ============================================================
+// RANGE PAGE
+// ============================================================
+function showRangePage(){
+  document.getElementById('range-page').style.display='flex';
+  document.getElementById('welcome-name').textContent=student.name;
+  var opts=document.querySelectorAll('.range-opt');
+  opts.forEach(function(o){o.classList.remove('selected');});
+  if(opts[0]) opts[0].classList.add('selected');
+  selectedRange={from:'all',to:'all',label:'All Questions'};
+}
+function selectRange(el,from,to){
+  document.querySelectorAll('.range-opt').forEach(function(o){o.classList.remove('selected');});
+  el.classList.add('selected');
+  var label=from==='all'?'All Questions':from==='random25'?'Random 25':from==='allqa'?'All Q&A Reference':from==='custom'?'Custom Range':('Q'+from+'–Q'+to);
+  selectedRange={from:from,to:to,label:label};
+  document.getElementById('custom-range-inputs').style.display=(from==='custom')?'block':'none';
+  document.getElementById('range-err').style.display='none';
+}
+function shuffleArray(arr){
+  for(var i=arr.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var tmp=arr[i];arr[i]=arr[j];arr[j]=tmp;
+  }
+  return arr;
+}
+function startExam(){
+  var from=selectedRange.from,to=selectedRange.to;
+  var errEl=document.getElementById('range-err');
+  if(errEl) errEl.style.display='none';
+
+  // Handle All Questions with Answers (browse mode)
+  if(from==='allqa'){
+    document.getElementById('range-page').style.display='none';
+    showQAPage();
+    return;
+  }
+
+  if(from==='all'){
+    examQuestions=QUESTIONS.slice();
+  } else if(from==='random25'){
+    var pool=QUESTIONS.slice();
+    shuffleArray(pool);
+    var picked=pool.slice(0,25);
+    examQuestions=picked.map(function(q){
+      var newOpts=q.opts.slice();
+      shuffleArray(newOpts);
+      var remapped=newOpts.map(function(o,idx){return {l:String.fromCharCode(65+idx),t:o.t,origL:o.l};});
+      var newAns=remapped.find(function(o){return o.origL===q.ans;});
+      return {num:q.num,q:q.q,opts:remapped.map(function(o){return {l:o.l,t:o.t};}),ans:newAns?newAns.l:q.ans};
+    });
+  } else if(from==='custom'){
+    from=parseInt(document.getElementById('custom-from').value);
+    to=parseInt(document.getElementById('custom-to').value);
+    if(!from||!to||isNaN(from)||isNaN(to)){
+      if(errEl){errEl.textContent='Please enter both start and end question numbers.';errEl.style.display='block';}
+      else alert('Please enter both start and end question numbers.');
+      return;
+    }
+    if(from<1||to<1||from>QUESTIONS.length||to>QUESTIONS.length){
+      if(errEl){errEl.textContent='Question numbers out of range.';errEl.style.display='block';}
+      else alert('Question numbers out of range.');
+      return;
+    }
+    if(from>to){
+      if(errEl){errEl.textContent='Start must be ≤ End.';errEl.style.display='block';}
+      else alert('Start must be ≤ End.');
+      return;
+    }
+    selectedRange={from:from,to:to,label:'Q'+from+'–Q'+to};
+    examQuestions=QUESTIONS.filter(function(q){return parseInt(q.num)>=from&&parseInt(q.num)<=to;});
+  } else {
+    from=parseInt(from);to=parseInt(to);
+    examQuestions=QUESTIONS.filter(function(q){return parseInt(q.num)>=from&&parseInt(q.num)<=to;});
+  }
+  if(examQuestions.length===0){alert('No questions found in this range.');return;}
+  cur=0;visited={};answers={};marked={};submitted=false;seconds=0;
+  document.getElementById('range-page').style.display='none';
+  showExamUI();
+}
+
+// ============================================================
+// ALL QUESTIONS WITH ANSWERS PAGE
+// ============================================================
+function showQAPage(){
+  document.getElementById('header').style.display='';
+  document.getElementById('footer').style.display='flex';
+  document.getElementById('sync-bar').style.display='none';
+  document.getElementById('app').style.display='none';
+  document.getElementById('result-page').style.display='none';
+  document.getElementById('qa-page').style.display='block';
+  document.getElementById('submit-btn').style.display='none';
+  document.getElementById('timer-box').style.display='none';
+  // Update header
+  document.querySelector('#header h1').textContent='📖 All Questions & Answers';
+  updateHdrStudentInfo();
+  renderQAList(QUESTIONS);
+}
+
+function exitQAPage(){
+  document.getElementById('qa-page').style.display='none';
+  document.getElementById('header').style.display='none';
+  document.getElementById('footer').style.display='none';
+  document.querySelector('#header h1').textContent='🧬 Clinical Anatomy';
+  document.getElementById('submit-btn').style.display='';
+  document.getElementById('timer-box').style.display='';
+  showRangePage();
+}
+
+function getSect(n){
+  if(n<=50) return 'Spinal Nerves & Plexuses';
+  if(n<=100) return 'Cranial Vessels';
+  if(n<=200) return 'Abdominal Vasculature';
+  if(n<=300) return 'Lower Limb Arteries';
+  if(n<=400) return 'Pelvic & Gluteal Vessels';
+  if(n<=500) return 'Upper Limb Vessels';
+  return 'Clinical Anatomy Applied';
+}
+
+function renderQAList(qs){
+  var c=document.getElementById('qa-list');
+  c.innerHTML='';
+  if(qs.length===0){
+    c.innerHTML='<div style="text-align:center;padding:40px;color:var(--subtext)">No questions match your search.</div>';
+    return;
+  }
+  qs.forEach(function(q){
+    var d=document.createElement('div');
+    d.className='qa-item';
+    var sect='<div class="qa-sect-label">'+getSect(parseInt(q.num))+'</div>';
+    var opts=q.opts.map(function(o){
+      var isCorrect=(o.l===q.ans);
+      return '<div class="qa-opt'+(isCorrect?' qa-correct':'')+'">'+o.l+'. '+escH(o.t)+(isCorrect?' ✓':'')+'</div>';
+    }).join('');
+    d.innerHTML=sect+'<div class="qa-qnum">Q'+q.num+'</div>'
+      +'<div class="qa-qtext">'+escH(q.q)+'</div>'
+      +'<div class="qa-opts">'+opts+'</div>';
+    c.appendChild(d);
+  });
+}
+
+function filterQA(val){
+  var v=val.toLowerCase().trim();
+  var filtered=v?QUESTIONS.filter(function(q){
+    return q.q.toLowerCase().includes(v)||q.num.toString().includes(v)||
+      q.opts.some(function(o){return o.t.toLowerCase().includes(v);});
+  }):QUESTIONS;
+  renderQAList(filtered);
+}
+
+// ============================================================
+// EXAM UI
+// ============================================================
+function showExamUI(){
+  document.getElementById('header').style.display='';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('footer').style.display='flex';
+  document.getElementById('sync-bar').style.display='flex';
+  document.getElementById('result-page').style.display='none';
+  document.getElementById('qa-page').style.display='none';
+  document.getElementById('submit-btn').style.display='';
+  document.getElementById('timer-box').style.display='';
+  document.querySelector('#header h1').textContent='🧬 Clinical Anatomy';
+  updateHdrStudentInfo();
+  renderQ();buildPalette();updateStats();
+  examStartTime=new Date();
+  clearInterval(timerInt);
+  timerInt=setInterval(function(){
+    seconds++;
+    document.getElementById('timer-box').textContent=formatTime(seconds);
+    document.getElementById('timer-box').classList.toggle('warn',seconds>5400);
+    if(seconds%30===0) saveSession();
+  },1000);
+  updateSyncUI();
+}
+function updateHdrStudentInfo(){
+  var el=document.getElementById('hdr-student-info');
+  var parts=[student.name,student.year,'Grp: '+student.group];
+  if(student.id) parts.push('ID: '+student.id);
+  el.innerHTML=parts.map(function(p){return '<span>'+escH(p)+'</span>';}).join('');
+}
+
+// ============================================================
+// QUESTION RENDERING
+// ============================================================
+function renderQ(){
+  var q=examQuestions[cur];visited[cur]=true;
+  document.getElementById('q-badge').textContent='Q '+q.num+' ('+(cur+1)+'/'+examQuestions.length+')';
+  document.getElementById('q-sect').textContent=getSect(parseInt(q.num));
+  document.getElementById('q-text').textContent=q.q;
+  var c=document.getElementById('opts-container');c.innerHTML='';
+  q.opts.forEach(function(o){
+    var d=document.createElement('div');d.className='opt';
+    if(answers[cur]===o.l) d.classList.add('selected');
+    d.innerHTML='<div class="opt-ltr">'+o.l+'</div><div class="opt-txt">'+escH(o.t)+'</div>';
+    d.onclick=function(){selectOpt(o.l,d);};
+    c.appendChild(d);
+  });
+  document.getElementById('prev-btn').disabled=(cur===0);
+  buildPalette();updateStats();
+}
+function selectOpt(l,el){
+  if(submitted) return;
+  document.querySelectorAll('.opt').forEach(function(o){o.classList.remove('selected');});
+  el.classList.add('selected');answers[cur]=l;buildPalette();updateStats();
+}
+function navigate(d){var n=cur+d;if(n<0||n>=examQuestions.length) return;cur=n;renderQ();}
+function saveAndNext(){if(cur<examQuestions.length-1){cur++;renderQ();}}
+function markReview(){marked[cur]=!marked[cur];buildPalette();updateStats();}
+function clearResp(){delete answers[cur];document.querySelectorAll('.opt').forEach(function(o){o.classList.remove('selected');});buildPalette();updateStats();}
+function doJump(){
+  var v=parseInt(document.getElementById('q-srch').value);
+  var idx=examQuestions.findIndex(function(q){return parseInt(q.num)===v;});
+  if(idx>=0){cur=idx;renderQ();closePal();}
+}
+function getStatus(i){
+  var a=!!answers[i],m=!!marked[i],v=!!visited[i];
+  if(a&&m) return 'amrk';if(m) return 'mrk';if(a) return 'ans';if(v) return 'na';return 'nv';
+}
+function buildPalette(){
+  var g=document.getElementById('pal-grid');g.innerHTML='';
+  examQuestions.forEach(function(q,i){
+    var st=getStatus(i);
+    if(palFilter!=='all'&&st!==palFilter) return;
+    var d=document.createElement('div');d.className='pq '+st+(i===cur?' cur':'');
+    d.textContent=q.num;
+    d.onclick=function(){cur=i;renderQ();if(window.innerWidth<=768) closePal();};
+    g.appendChild(d);
+  });
+}
+function updateStats(){
+  var ans=Object.keys(answers).length;
+  var mrk=Object.keys(marked).filter(function(k){return marked[k];}).length;
+  var vis=Object.keys(visited).length;
+  var sb=document.getElementById('stats-bar');
+  sb.innerHTML=[{v:examQuestions.length,l:'Total'},{v:ans,l:'Answered',c:'color:#2e7d32'},{v:examQuestions.length-ans,l:'Not Ans',c:'color:#c62828'},{v:mrk,l:'Marked',c:'color:#e65100'},{v:vis,l:'Visited',c:'color:#7b2ff7'}]
+  .map(function(s){return '<div class="stat"><span class="stat-val"'+(s.c?' style="'+s.c+'"':'')+'>'+s.v+'</span><span class="stat-lbl">'+s.l+'</span></div>';}).join('');
+  document.getElementById('prog-fill').style.width=(ans/examQuestions.length*100)+'%';
+}
+function setPalFlt(f,el){palFilter=f;document.querySelectorAll('.ftab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');buildPalette();}
+function closePal(){document.getElementById('palette-panel').classList.remove('open');}
+function togglePal(){document.getElementById('palette-panel').classList.toggle('open');}
+function toggleFS(){if(!document.fullscreenElement) document.documentElement.requestFullscreen();else document.exitFullscreen();}
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  var d=document.body.classList.contains('dark');
+  document.getElementById('dark-btn').textContent=d?'Light':'Dark';
+  ls('cm_dark',d?'1':'0');
+}
+
+// ============================================================
+// EXIT EXAM (back button)
+// ============================================================
+function exitExam(){
+  document.getElementById('exit-modal').classList.add('open');
+}
+function doExit(){
+  closeModal('exit-modal');
+  saveSession();
+  clearInterval(timerInt);
+  document.getElementById('header').style.display='none';
+  document.getElementById('app').style.display='none';
+  document.getElementById('footer').style.display='none';
+  document.getElementById('sync-bar').style.display='none';
+  document.getElementById('result-page').style.display='none';
+  document.getElementById('qa-page').style.display='none';
+  showRangePage();
+  showToast('Progress saved. You can resume anytime.','success',3000);
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+function reloadExam(){
+  if(confirm('Go back to range selection? Your progress will be saved.')){
+    saveSession();
+    clearInterval(timerInt);
+    document.getElementById('header').style.display='none';
+    document.getElementById('app').style.display='none';
+    document.getElementById('footer').style.display='none';
+    document.getElementById('sync-bar').style.display='none';
+    document.getElementById('result-page').style.display='none';
+    showRangePage();
+  }
+}
+function confirmSubmit(){
+  var ans=Object.keys(answers).length;var not=examQuestions.length-ans;
+  document.getElementById('confirm-msg').textContent='You have answered '+ans+' of '+examQuestions.length+' questions.'+(not>0?' '+not+' unattempted. ':' ')+'Submit now?';
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function submitExam(){
+  closeModal('confirm-modal');
+  clearInterval(timerInt);
+  examEndTime=new Date();submitted=true;lsDel('cm_session');
+
+  var correct=0,wrong=0,skip=0,mrkCount=Object.keys(marked).filter(function(k){return marked[k];}).length;
+  examQuestions.forEach(function(q,i){
+    if(!answers[i]) skip++;else if(answers[i]===q.ans) correct++;else wrong++;
+  });
+  var total=examQuestions.length,pct=Math.round(correct/total*100);
+  var now=examEndTime;
+  var dateStr=now.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  var timeStr=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  var durationStr=formatTime(seconds);
+  var device=getDeviceType();
+
+  lastResult={
+    name:student.name,year:student.year,group:student.group,id:student.id||'N/A',email:student.email||'N/A',
+    date:dateStr,time:timeStr,duration:durationStr,
+    range:selectedRange.label,total:total,attempted:total-skip,unattempted:skip,markedForReview:mrkCount,
+    correct:correct,wrong:wrong,score:correct+'/'+total,percentage:pct+'%',device:device,
+    exam:'Clinical Anatomy',synced:false,timestamp:now.getTime()
+  };
+
+  // Save to pending list
+  var pending=lsJ('cm_pending')||[];
+  pending.push(lastResult);
+  lsJ('cm_pending',pending);
+  lsJ('cm_last_result',lastResult);
+  syncStatus='pending';
+
+  // Save to leaderboard
+  saveToLeaderboard(student.name, correct, total, pct);
+
+  // Show results
+  document.getElementById('app').style.display='none';
+  document.getElementById('header').style.display='flex';
+  document.getElementById('result-page').style.display='block';
+  document.getElementById('sync-bar').style.display='none';
+  document.getElementById('submit-btn').style.display='none';
+
+  // Student info block
+  var grid=document.getElementById('res-student-grid');
+  var items=[
+    {l:'Student Name',v:student.name},{l:'Academic Year',v:student.year},{l:'Group Number',v:student.group},
+    {l:'Student ID',v:student.id||'N/A'},{l:'Date',v:dateStr},{l:'Time',v:timeStr},
+    {l:'Duration',v:durationStr},{l:'Question Range',v:selectedRange.label},{l:'Device',v:device}
+  ];
+  grid.innerHTML=items.map(function(it){return '<div class="sib-item"><span class="sib-label">'+it.l+'</span><span class="sib-value">'+escH(it.v)+'</span></div>';}).join('');
+
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-stats').innerHTML=[
+    {v:total,l:'Total',c:''},{v:correct,l:'Correct',c:'color:#2e7d32'},{v:wrong,l:'Wrong',c:'color:#c62828'},
+    {v:skip,l:'Skipped',c:'color:#6b6b8d'},{v:mrkCount,l:'Marked',c:'color:#e65100'}
+  ].map(function(s){return '<div class="rs"><span class="rs-val"'+(s.c?' style="'+s.c+'"':'')+'>'+s.v+'</span><span class="rs-lbl">'+s.l+'</span></div>';}).join('');
+
+  // Show rank banner if all correct
+  if(correct===total&&total>0){
+    showRankBanner(correct, total, pct);
+  } else {
+    document.getElementById('rank-banner').style.display='none';
+  }
+
+  showRev('all');
+  renderLeaderboard();
+  updateResultSyncCard();
+  trySyncNow();
+}
+
+// ============================================================
+// RANK SYSTEM
+// ============================================================
+function showRankBanner(correct, total, pct){
+  var banner=document.getElementById('rank-banner');
+  banner.style.display='block';
+  // Rank will be updated by renderLeaderboard() once live data loads
+  document.getElementById('rank-stars').textContent='\u{1F31F}\u{1F31F}\u{1F31F}';
+  document.getElementById('rank-title').textContent='\u{1F3C6} Perfect Score! '+pct+'%';
+  document.getElementById('rank-msg').textContent='You answered all '+total+' questions correctly. Incredible performance!';
+  document.getElementById('rank-badge').textContent='Checking your live rank…';
+  banner.querySelector('.rank-stars').style.animation='none';
+  void banner.querySelector('.rank-stars').offsetWidth;
+  banner.querySelector('.rank-stars').style.animation='starPop .5s ease both';
+}
+
+// ============================================================
+// LEADERBOARD — LIVE from Google Sheets
+// ============================================================
+var SCRIPT_URL='https://script.google.com/macros/s/AKfycbxwi3vFnyAcS-JI6pA8AfIDwWNG2Jl0Ui4tNBFLIElB-aDiSuFU4u03avpn595cU1lV4A/exec';
+var lbFetchTimer=null;
+
+function saveToLeaderboard(name,correct,total,pct){
+  // Data is sent to Google Sheets via trySyncNow(). No local leaderboard needed.
+}
+
+function fetchLeaderboard(manual){
+  var list=document.getElementById('leaderboard-list');
+  var dot=document.getElementById('lb-status-dot');
+  var txt=document.getElementById('lb-status-text');
+  if(!list) return;
+  if(lbFetchTimer){clearTimeout(lbFetchTimer);lbFetchTimer=null;}
+
+  if(!isOnline){
+    dot.style.background='#d42828';dot.style.animation='none';
+    txt.textContent='Offline — showing cached leaderboard';
+    renderLeaderboard(lsJ('cm_lb_cache')||[]);
+    return;
+  }
+
+  dot.style.background='#ff9800';dot.style.animation='pulse 1s infinite';
+  txt.textContent='Fetching live data…';
+  if(manual) list.innerHTML='<div class="lb-empty" style="padding:12px">Refreshing…</div>';
+
+  // JSONP approach: inject a script tag so we can read the response
+  var cbName='_lbCb'+Date.now();
+  var s=document.createElement('script');
+  s.src=SCRIPT_URL+'?action=leaderboard&callback='+cbName+'&_='+Date.now();
+  var done=false;
+  window[cbName]=function(data){done=true;if(s.parentNode)s.parentNode.removeChild(s);delete window[cbName];handleLeaderboardData(data);};
+
+  // Timeout: fall back to plain fetch (works if GAS has CORS) or cache
+  var timer=setTimeout(function(){
+    if(done) return;
+    if(s.parentNode) s.parentNode.removeChild(s);
+    delete window[cbName];
+    fetch(SCRIPT_URL+'?action=leaderboard&_='+Date.now())
+      .then(function(r){return r.json();})
+      .then(function(d){handleLeaderboardData(d);})
+      .catch(function(){
+        dot.style.background='#e65100';dot.style.animation='none';
+        txt.textContent='Live data unavailable — showing cached results';
+        renderLeaderboard(lsJ('cm_lb_cache')||[]);
+      });
+  },7000);
+  s._timer=timer;
+  document.head.appendChild(s);
+}
+
+function handleLeaderboardData(data){
+  var dot=document.getElementById('lb-status-dot');
+  var txt=document.getElementById('lb-status-text');
+  if(!dot) return;
+  var entries=Array.isArray(data)?data:(data&&data.entries?data.entries:[]);
+  if(!entries||entries.length===0){
+    dot.style.background='#9e9e9e';dot.style.animation='none';
+    txt.textContent='No submissions yet — be the first!';
+    renderLeaderboard([]);return;
+  }
+  var norm=entries.map(function(e){
+    return{
+      name:e.name||e.Name||e['Student Name']||'Unknown',
+      correct:parseInt(e.correct||e.Correct||e.Score||0,10),
+      total:parseInt(e.total||e.Total||e['Total Questions']||0,10),
+      pct:parseFloat(e.pct||e.Percentage||0),
+      id:(e.id||e.StudentID||e['Student ID']||'').toString().trim(),
+      date:e.date||e.Date||''
+    };
+  });
+  norm.sort(function(a,b){return b.correct-a.correct||b.pct-a.pct;});
+  lsJ('cm_lb_cache',norm);
+  dot.style.background='#1a8c2e';dot.style.animation='none';
+  txt.textContent='Live · Updated just now · '+norm.length+' student'+(norm.length!==1?'s':'');
+  renderLeaderboard(norm);
+  lbFetchTimer=setTimeout(function(){fetchLeaderboard(false);},60000);
+}
+
+function renderLeaderboard(lb){
+  var list=document.getElementById('leaderboard-list');
+  var myRankDiv=document.getElementById('lb-my-rank');
+  if(!list) return;
+  if(!lb||lb.length===0){
+    list.innerHTML='<div class="lb-empty">No results yet. Be the first on the leaderboard!</div>';
+    if(myRankDiv) myRankDiv.style.display='none';
+    return;
+  }
+  var myId=(student&&student.id)?student.id.toString().trim():'';
+  var myName=(student&&student.name)?student.name.toString().trim().toLowerCase():'';
+  var myRank=-1;
+  var html='';
+  lb.slice(0,10).forEach(function(e,i){
+    var rank=i+1;
+    var rankClass=rank===1?'lb-rank-1':rank===2?'lb-rank-2':rank===3?'lb-rank-3':'lb-rank-n';
+    var rankIcon=rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank;
+    var eid=(e.id||'').toString().trim();
+    var ename=(e.name||'').toString().trim().toLowerCase();
+    var isMe=(myId&&eid&&myId===eid)||(myName&&ename&&myName===ename);
+    if(isMe&&myRank===-1) myRank=rank;
+    var meLabel=isMe?'<span class="lb-me-label">YOU</span>':'';
+    html+='<div class="lb-row'+(isMe?' lb-me':'')+'">'+
+      '<div class="lb-rank '+rankClass+'">'+rankIcon+'</div>'+
+      '<div class="lb-name">'+escH(e.name)+' '+meLabel+'</div>'+
+      '<div class="lb-pct">'+e.pct+'%</div>'+
+      '<div class="lb-score">'+e.correct+'/'+(e.total||'?')+'</div>'+
+      '</div>';
+  });
+  list.innerHTML=html;
+
+  // Show personal rank row (covers outside-top-10 case)
+  if(myRankDiv){
+    if(myRank>0){
+      myRankDiv.style.display='block';
+      myRankDiv.innerHTML='🎯 Your rank: <strong>#'+myRank+'</strong> out of '+lb.length+' student'+(lb.length!==1?'s':'');
+    } else if(myId||myName){
+      var fr=-1;
+      for(var i=0;i<lb.length;i++){
+        var eid2=(lb[i].id||'').toString().trim();
+        var en2=(lb[i].name||'').toString().trim().toLowerCase();
+        if((myId&&eid2&&myId===eid2)||(myName&&en2&&myName===en2)){fr=i+1;break;}
+      }
+      myRankDiv.style.display='block';
+      myRankDiv.innerHTML=fr>0
+        ?'🎯 Your rank: <strong>#'+fr+'</strong> out of '+lb.length+' student'+(lb.length!==1?'s':'')
+        :'⏳ Your result is syncing — your rank will appear here shortly';
+    } else {
+      myRankDiv.style.display='none';
+    }
+  }
+
+  // Update rank banner badge
+  var rb=document.getElementById('rank-badge');
+  if(rb&&myRank>0) rb.textContent='You are Rank #'+myRank+' out of '+lb.length+' students!';
+}
+
+// ============================================================
+// REVIEW
+// ============================================================
+function showRev(filter){
+  var c=document.getElementById('rev-container');c.innerHTML='';
+  var head=document.createElement('div');head.className='ftabs';
+  [['all','All'],['correct','Correct'],['wrong','Wrong'],['skip','Skipped']].forEach(function(pr){
+    var t=document.createElement('div');t.className='ftab'+(pr[0]===filter?' active':'');
+    t.textContent=pr[1];t.onclick=function(){showRev(pr[0]);};head.appendChild(t);
+  });
+  c.appendChild(head);
+  examQuestions.forEach(function(q,i){
+    var userAns=answers[i],correct=q.ans,isCorrect=userAns===correct,isSkip=!userAns;
+    if(filter==='correct'&&!isCorrect) return;
+    if(filter==='wrong'&&(isCorrect||isSkip)) return;
+    if(filter==='skip'&&!isSkip) return;
+    var d=document.createElement('div');d.className='rev-q';
+    var badge=isSkip?'<span class="badge bs">Skipped</span>':isCorrect?'<span class="badge bc">Correct</span>':'<span class="badge bw">Wrong</span>';
+    d.innerHTML='<div class="rqh" onclick="this.nextElementSibling.classList.toggle(\'open\')"><span class="rqh-txt"><b>Q'+q.num+'.</b> '+escH(q.q.substring(0,80))+(q.q.length>80?'…':'')+'</span>'+badge+'</div>'+
+      '<div class="rqb"><p style="margin-bottom:8px;font-size:.88rem;color:var(--subtext)">'+escH(q.q)+'</p>'+
+      q.opts.map(function(o){var cls='r-opt'+(o.l===correct?' c':(o.l===userAns&&!isCorrect?' w':''));return '<div class="'+cls+'">'+o.l+'. '+escH(o.t)+(o.l===correct?' ✓':'')+(o.l===userAns&&!isCorrect?' ✗':'')+'</div>';}).join('')+'</div>';
+    c.appendChild(d);
+  });
+}
+
+// ============================================================
+// CONNECTIVITY & SYNC
+// ============================================================
+function initConnectivityMonitor(){
+  isOnline=navigator.onLine;
+  window.addEventListener('online',function(){
+    isOnline=true;updateSyncUI();
+    var pending=lsJ('cm_pending')||[];
+    if(pending.length>0&&!pendingSyncPrompted){
+      pendingSyncPrompted=true;
+      document.getElementById('pending-count').textContent=pending.length;
+      document.getElementById('pending-sync-modal').classList.add('open');
+    }
+  });
+  window.addEventListener('offline',function(){isOnline=false;updateSyncUI();});
+  clearInterval(connCheckInt);
+  connCheckInt=setInterval(function(){
+    var nowOnline=navigator.onLine;
+    if(nowOnline!==isOnline){isOnline=nowOnline;updateSyncUI();}
+  },30000);
+}
+
+function updateSyncUI(){
+  var dot=document.getElementById('sync-dot');
+  var hdrDot=document.getElementById('hdr-sync-dot');
+  var txt=document.getElementById('sync-bar-text');
+  var btn=document.getElementById('sync-bar-btn');
+  var sb=document.getElementById('sync-bar');
+  var pending=lsJ('cm_pending')||[];
+
+  if(!isOnline){
+    syncStatus='offline';
+    if(dot){dot.className='sync-dot offline';}
+    if(hdrDot){hdrDot.className='hdr-sync-dot offline';}
+    if(txt) txt.textContent='Offline — data saved locally, will sync when connected';
+    if(btn) btn.style.display='none';
+    if(sb){sb.className='';sb.classList.add('offline');}
+  } else if(pending.length>0){
+    syncStatus='pending';
+    if(dot){dot.className='sync-dot pending';}
+    if(hdrDot){hdrDot.className='hdr-sync-dot pending';}
+    if(txt) txt.textContent=pending.length+' result(s) pending synchronization';
+    if(btn){btn.style.display='';btn.className='sync-btn do-sync';btn.textContent='Sync Now';}
+    if(sb){sb.className='';sb.classList.add('pending');}
+  } else {
+    syncStatus='synced';
+    if(dot){dot.className='sync-dot online';}
+    if(hdrDot){hdrDot.className='hdr-sync-dot online';}
+    if(txt) txt.textContent='Online — all data synchronized';
+    if(btn){btn.style.display='';btn.className='sync-btn done';btn.textContent='✓ Synced';}
+    if(sb){sb.className='';sb.classList.add('online');}
+  }
+  if(submitted) updateResultSyncCard();
+}
+
+function updateResultSyncCard(){
+  var card=document.getElementById('res-sync-card');
+  var icon=document.getElementById('res-sync-icon');
+  var title=document.getElementById('res-sync-title');
+  var sub=document.getElementById('res-sync-sub');
+  var btn=document.getElementById('res-sync-btn');
+  if(!card) return;
+  var pending=lsJ('cm_pending')||[];
+  if(!isOnline){
+    card.className='sync-status-card offline';
+    icon.textContent='📴';title.textContent='Offline — Data Saved Locally';
+    sub.textContent='Your result is stored on this device. It will sync automatically when internet is available.';
+    btn.className='sync-now-btn disabled';btn.textContent='No Connection';
+  } else if(pending.length>0){
+    card.className='sync-status-card pending';
+    icon.textContent='⏳';title.textContent='Pending Synchronization';
+    sub.textContent='Internet connected. Click Sync Now to transmit your result to the administrator.';
+    btn.className='sync-now-btn active';btn.textContent='Sync Now';
+  } else {
+    card.className='sync-status-card synced';
+    icon.textContent='✅';title.textContent='Exam Data Synchronized Successfully';
+    sub.textContent='Your result has been transmitted to the administrator for academic records.';
+    btn.className='sync-now-btn disabled';btn.textContent='✓ Done';
+  }
+}
+
+function trySyncNow(){
+  if(!isOnline){showToast('No internet connection. Data saved locally.','error');return;}
+  var pending=lsJ('cm_pending')||[];
+  if(pending.length===0){showToast('All data already synchronized.','success');return;}
+
+  showToast('Synchronizing...','info',2000);
+
+  var sent=0;
+  function sendNext(idx){
+    if(idx>=pending.length){
+      lsJ('cm_pending',[]);
+      syncStatus='synced';
+      updateSyncUI();
+      updateResultSyncCard();
+      showToast('Exam data synchronized successfully! ✓','success',4000);
+      pendingSyncPrompted=false;
+      return;
+    }
+    var record=pending[idx];
+    fetch(SCRIPT_URL,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify(record)
+    })
+    .then(function(){sent++;sendNext(idx+1);})
+    .catch(function(err){
+      var encoded=encodeURIComponent(JSON.stringify(record));
+      var img=new Image();
+      img.src=SCRIPT_URL+'?data='+encoded;
+      img.onload=img.onerror=function(){sent++;sendNext(idx+1);};
+    });
+  }
+  sendNext(0);
+}
+
+function syncPendingNow(){
+  closeModal('pending-sync-modal');
+  trySyncNow();
+}
+
+// ============================================================
+// DOWNLOAD RESULT
+// ============================================================
+function downloadResult(){
+  if(!lastResult) return;
+  var r=lastResult;
+  var lines=[
+    '========================================',
+    '     CLINICAL ANATOMY',
+    '     OSHMEDCHRONICLE — EXAM REPORT',
+    '========================================',
+    '',
+    'CANDIDATE INFORMATION',
+    '----------------------------------------',
+    'Name            : '+r.name,
+    'Academic Year   : '+r.year,
+    'Group Number    : '+r.group,
+    'Student ID      : '+r.id,
+    'Email           : '+r.email,
+    '',
+    'EXAM DETAILS',
+    '----------------------------------------',
+    'Exam Name       : '+r.exam,
+    'Date            : '+r.date,
+    'Time            : '+r.time,
+    'Duration        : '+r.duration,
+    'Selected Range  : '+r.range,
+    'Device Type     : '+r.device,
+    '',
+    'PERFORMANCE SUMMARY',
+    '----------------------------------------',
+    'Total Questions : '+r.total,
+    'Attempted       : '+r.attempted,
+    'Not Attempted   : '+r.unattempted,
+    'Marked for Rev  : '+r.markedForReview,
+    'Correct         : '+r.correct,
+    'Wrong           : '+r.wrong,
+    'Score           : '+r.score,
+    'Percentage      : '+r.percentage,
+    '',
+    '========================================',
+    'QUESTION-WISE REVIEW',
+    '========================================',
+    ''
+  ];
+  examQuestions.forEach(function(q,i){
+    var ua=answers[i],ca=q.ans,res=!ua?'SKIPPED':ua===ca?'CORRECT':'WRONG';
+    lines.push('Q'+q.num+'. ['+res+'] '+q.q);
+    q.opts.forEach(function(o){
+      var marker=o.l===ca?' ← CORRECT':o.l===ua&&ua!==ca?' ← YOUR ANSWER':'';
+      lines.push('   '+o.l+'. '+o.t+marker);
+    });
+    lines.push('');
+  });
+  lines.push('========================================');
+  lines.push('Generated by OSHMEDCHRONICLE');
+  lines.push('Pradeep Waghmare | YouTube: oshmedchronicle');
+  lines.push('========================================');
+
+  var text=lines.join('\n');
+  var blob=new Blob([text],{type:'text/plain'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='ClinicalAnatomy_'+r.name.replace(/\s+/g,'_')+'_'+r.date.replace(/\s+/g,'_')+'.txt';
+  a.click();
+  showToast('Result downloaded successfully!','success');
+}
+
+// ============================================================
+// RETEST
+// ============================================================
+function openRetestModal(){document.getElementById('retest-modal').classList.add('open');}
+function doRetake(){
+  closeModal('retest-modal');
+  document.getElementById('result-page').style.display='none';
+  document.getElementById('rank-banner').style.display='none';
+  document.getElementById('submit-btn').style.display='';
+  showRangePage();
+}
+function doFreshExam(){
+  closeModal('retest-modal');
+  student={};
+  lsDel('cm_student');lsDel('cm_session');lsDel('cm_consent');
+  document.getElementById('result-page').style.display='none';
+  document.getElementById('footer').style.display='none';
+  document.getElementById('header').style.display='none';
+  document.getElementById('sync-bar').style.display='none';
+  document.getElementById('submit-btn').style.display='';
+  ['reg-name','reg-id','reg-email'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('reg-year').value='';document.getElementById('reg-group').value='';
+  document.getElementById('recovery-banner').style.display='none';
+  document.getElementById('consent-page').style.display='flex';
+  document.getElementById('consent-check').checked=false;
+  document.getElementById('consent-check-row').classList.remove('checked');
+  document.getElementById('consent-accept-btn').classList.remove('enabled');
+}
+</script>
+</body>
+</html>
